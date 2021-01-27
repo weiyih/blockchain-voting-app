@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">eVoting</string>
+    <string name="btn_login">Login</string>
+    <string name="txt_email">Email or phone</string>
+    <string name="txt_password">Password</string>
+    <string name="btn_register" >Register to vote online</string>
+    <string name="powered_by" translatable="false">powered by eVotes</string>
+    <string name="oakville_votes" translatable="false">oakville votes</string>
 </resources>
