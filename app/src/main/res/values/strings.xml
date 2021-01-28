@@ -6,4 +6,8 @@
     <string name="btn_register" >Register to vote online</string>
     <string name="powered_by" translatable="false">powered by eVotes</string>
     <string name="oakville_votes" translatable="false">oakville votes</string>
+    <string name="prompt_bio_title">Biometric Authentication</string>
+    <string name="prompt_bio_subtitle">Biometric login to access the voting application</string>
+    <string name="prompt_bio_description">Oakville Votes is using Android biometric authentication</string>
+    <string name="prompt_bio_use_password">Use password</string>
 </resources>
