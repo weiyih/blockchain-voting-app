@@ -33,9 +33,9 @@ object BiometricPromptUtils {
 
     // Create Biometric Prompt that returns a callback
     fun createBiometricPrompt(
-            activity: AppCompatActivity,
-            processSuccess: (BiometricPrompt.AuthenticationResult) -> Unit): BiometricPrompt {
-
+        activity: AppCompatActivity,
+        processSuccess: (BiometricPrompt.AuthenticationResult) -> Unit
+    ): BiometricPrompt {
         // Return an Executor that will run enqueued tasks on the main thread associated with this context.
         val executor = ContextCompat.getMainExecutor(activity)
 
@@ -52,7 +52,7 @@ object BiometricPromptUtils {
 
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 super.onAuthenticationSucceeded(result)
-                Log.d(TAG,"Biometric authentication successful")
+                Log.d(TAG, "Biometric authentication successful")
             }
         }
 
@@ -60,12 +60,12 @@ object BiometricPromptUtils {
     }
 
     // Configures how prompt should appear and behave
-    fun createPromptInfo( activity: AppCompatActivity): BiometricPrompt.PromptInfo =
-            BiometricPrompt.PromptInfo.Builder().apply {
-                setTitle(activity.getString(R.string.prompt_bio_title))
-                setSubtitle(activity.getString(R.string.prompt_bio_subtitle))
-                setDescription(activity.getString(R.string.prompt_bio_description))
-                setConfirmationRequired(false)
-                setNegativeButtonText(activity.getString(R.string.prompt_bio_use_password))
-            }.build()
+    fun createPromptInfo(activity: AppCompatActivity): BiometricPrompt.PromptInfo =
+        BiometricPrompt.PromptInfo.Builder().apply {
+            setTitle(activity.getString(R.string.prompt_bio_title))
+            setSubtitle(activity.getString(R.string.prompt_bio_subtitle))
+            setDescription(activity.getString(R.string.prompt_bio_description))
+            setConfirmationRequired(false)
+            setNegativeButtonText(activity.getString(R.string.prompt_bio_use_password))
+        }.build()
 }
