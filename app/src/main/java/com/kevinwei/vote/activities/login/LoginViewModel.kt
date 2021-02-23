@@ -32,6 +32,7 @@ class LoginViewModel : ViewModel() {
         }
     }
 
+
     /*
     https://android.googlesource.com/platform/frameworks/base/+/81aa097/core/java/android/util/Patterns.java
     EMAIL_ADDRESS Pattern
