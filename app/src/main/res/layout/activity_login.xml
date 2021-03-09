@@ -24,6 +24,7 @@
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintWidth_max="400dp"
         app:startIconDrawable="@drawable/ic_baseline_person_24"
+        app:errorEnabled="true"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -47,6 +48,8 @@
         app:layout_constraintTop_toBottomOf="@+id/txtUser"
         app:layout_constraintWidth_max="400dp"
         app:startIconDrawable="@drawable/ic_baseline_lock_24"
+        app:endIconMode="password_toggle"
+        app:errorEnabled="true"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
