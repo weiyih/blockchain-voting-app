@@ -1,9 +1,10 @@
-package com.kevinwei.vote
+package com.kevinwei.vote.security
 
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
+import com.kevinwei.vote.R
 
 /*
 BiometricPromptUtils
