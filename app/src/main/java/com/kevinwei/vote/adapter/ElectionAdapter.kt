@@ -3,18 +3,18 @@ package com.kevinwei.vote.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.kevinwei.vote.R
-import com.kevinwei.vote.databinding.ActivityLoginBinding
 import com.kevinwei.vote.databinding.CardElectionBinding
 import com.kevinwei.vote.model.Election
-import org.w3c.dom.Text
 
 class ElectionAdapter : RecyclerView.Adapter<ElectionAdapter.ViewHolder>() {
     //class ElectionAdapter(private val dataSet: Array<String>) : RecyclerView.Adapter<ElectionAdapter.ViewHolder>() {
     private lateinit var binding: CardElectionBinding
+
+    private
+
     var data = listOf<Election>()
         set(value) {
             field = value
@@ -32,10 +32,6 @@ class ElectionAdapter : RecyclerView.Adapter<ElectionAdapter.ViewHolder>() {
 
     // Creates and inflates view
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-
-//        binding = CardElectionBinding.inflate().inflate(layoutInflater)
-//        view = CardElectionBinding.inflate(layoutInflater, viewGroup, false)
-
         val view = LayoutInflater.from(viewGroup.context)
                 .inflate(R.layout.card_election, viewGroup, false)
         return ViewHolder(view)
@@ -45,10 +41,9 @@ class ElectionAdapter : RecyclerView.Adapter<ElectionAdapter.ViewHolder>() {
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val item = data[position]
 
-        binding.electionTitle.text = item.title.toString()
-        binding.electionDescription.text = item.description.toString()
-
-//        binding.voteButton
+        // TODO("More cardView bindings")
+        binding.electionTitle.text = item.electionName.toString()
+        binding.electionDescription.text = item.electionDescription.toString()
     }
 
     override fun getItemCount(): Int {
