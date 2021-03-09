@@ -1,4 +1,4 @@
-package com.kevinwei.vote.activities.main
+package com.kevinwei.vote.activities.ballot
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

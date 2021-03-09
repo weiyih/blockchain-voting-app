@@ -1,13 +1,11 @@
-package com.kevinwei.vote.activities.main
+package com.kevinwei.vote.activities.election
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.kevinwei.vote.R
 import com.kevinwei.vote.adapter.ElectionAdapter
-import com.kevinwei.vote.databinding.ActivityLoginBinding
 import com.kevinwei.vote.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class ElectionActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

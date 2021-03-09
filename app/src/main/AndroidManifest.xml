@@ -22,9 +22,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.main.ConfirmActivity" />
-        <activity android:name=".activities.main.BallotActivity" />
-        <activity android:name=".activities.main.MainActivity" />
+        <activity android:name=".activities.ballot.BallotConfirmFragment" />
+        <activity android:name=".activities.ballot.BallotActivity" />
+        <activity android:name=".activities.election.ElectionActivity" />
         <activity android:name=".activities.register.RegisterActivity" />
     </application>
 

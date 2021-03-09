@@ -1,9 +1,8 @@
-package com.kevinwei.vote.activities.main
+package com.kevinwei.vote.activities.election
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.kevinwei.vote.model.Election
 import com.kevinwei.vote.network.ElectionsApi
 import retrofit2.Call
 
