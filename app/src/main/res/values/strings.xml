@@ -12,4 +12,10 @@
     <string name="prompt_bio_use_password">Use password</string>
     <string name="invalid_username">Invalid email address</string>
     <string name="invalid_password">Password length too short</string>
+    <string name="main_title">Elections</string>
+    <string name="content_description_election">Election</string>
+    <string name="setting">Settings</string>
+    <string name="content_description_setting">Settings</string>
+    <string name="election">Election</string>
+    <string name="vote_in">vote</string>
 </resources>
