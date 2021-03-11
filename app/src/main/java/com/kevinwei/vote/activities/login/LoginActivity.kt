@@ -48,8 +48,8 @@ class LoginActivity : AppCompatActivity() {
                 when (loginState) {
                     is SuccessLoginFormState -> binding.btnLogin.isEnabled = loginState.isDataValid
                     is FailedLoginFormState -> {
-                        loginState.usernameError?.let { binding.txtUser.error = getString(it) }
-                        loginState.passwordError?.let { binding.txtPassword.error = getString(it) }
+                        loginState.usernameError?.let { binding.username.error = getString(it) }
+                        loginState.passwordError?.let { binding.password.error = getString(it) }
                     }
                 }
             })
@@ -58,65 +58,22 @@ class LoginActivity : AppCompatActivity() {
             val loginResult = it ?: return@Observer
             if (loginResult.success) {
                 Toast.makeText(this, "Logged In", Toast.LENGTH_LONG).show()
+
             }
         })
 
-        binding.txtUser.editText?.doAfterTextChanged {
+        binding.username.editText?.doAfterTextChanged {
             loginWithPasswordViewModel.onLoginDataChange(
-                binding.txtUser.editText.toString(),
-                binding.txtPassword.editText.toString()
-            )
-        }
-
-        binding.txtPassword.editText?.doAfterTextChanged {
-            loginWithPasswordViewModel.onLoginDataChange(
-                binding.txtUser.editText.toString(),
-                binding.txtPassword.editText.toString()
+                binding.username.editText.toString(),
+                binding.password.editText.toString()
             )
         }
 
         binding.btnLogin.setOnClickListener {
             loginWithPasswordViewModel.loginWithPassword(
-                binding.txtUser.editText.toString(),
-                binding.txtPassword.editText.toString()
+                binding.username.editText.toString(),
+                binding.password.editText.toString()
             )
         }
-    }
-
-    private fun checkBioAuth() {
-        var canAuthenticate: Int
-//        binding = ActivityLoginBinding.inflate
-
-        // Android 9.0 Pie
-        if (android.os.Build.VERSION.SDK_INT == 28) {
-//            canAuthenticate = KeyguardManager.from(applicationContext)
-
-        } else if (android.os.Build.VERSION.SDK_INT == 29) {
-            // BIOMETRIC_SUCCESS or STATUS_UNKNOWN
-            canAuthenticate = BiometricManager.from(applicationContext).canAuthenticate()
-        } else if (android.os.Build.VERSION.SDK_INT >= 30) {
-            canAuthenticate =
-                BiometricManager.from(applicationContext).canAuthenticate(AUTHORIZED_BIOMETRICS)
-        }
-        canAuthenticate =
-            BiometricManager.from(applicationContext).canAuthenticate(AUTHORIZED_BIOMETRICS)
-        if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
-
-        }
-
-    }
-
-    // Determines login method
-    private fun onLogin() {
-
-    }
-
-
-    private fun loginWithPassword() {
-
-    }
-
-    private fun loginWithBiometrics() {
-
     }
 }
