@@ -5,26 +5,29 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kevinwei.vote.model.Election
 import com.kevinwei.vote.network.ElectionsApi
+import com.kevinwei.vote.network.ElectionsApiService
 import kotlinx.coroutines.launch
 
 import java.lang.Exception
 
 class ElectionViewModel:ViewModel() {
     private val TAG = "ElectionViewModel"
-    private val _response = MutableLiveData<String>()
-//    private val _response = MutableLiveData<Election>()
 
-    //    val response: LiveData<Election>
-    val response: LiveData<String>
-        get() = _response
+//    private val _status = MutableLiveData<ElectionApiStatus>
+//    val status: LiveData<ElectionApiStatus>
+
+    private val _data = MutableLiveData<List<Election>>()
+
+    val electionData: LiveData<List<Election>>
+        get() = _data
 
     init {
         getElections()
     }
 
-
-    private fun getElections() {
+    fun getElections() {
         viewModelScope.launch {
             try{
                 val electionList = ElectionsApi.retrofitService.getElections()
@@ -32,11 +35,13 @@ class ElectionViewModel:ViewModel() {
 //                    TODO("Decrypt data")
 //                    TODO("Store in ROOM?")
                 Log.d(TAG, electionList.size.toString())
-                _response.value = "${electionList.size} retrieved"
+                _data.value = electionList
 
             }catch (e:Exception) {
 //                    TODO("Not yet implemented")
-                _response.value = "Failed: " + e.message
+//                _data = empty
+                _data.value = ArrayList()
+//                throw Exception(_data.value)
             }
         }
     }
