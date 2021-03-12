@@ -1,7 +1,10 @@
 package com.kevinwei.vote.activities.login
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.biometric.BiometricManager
@@ -10,14 +13,16 @@ import androidx.biometric.BiometricManager.Authenticators
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-import com.kevinwei.vote.CIPHERTEXT_WRAPPER
-import com.kevinwei.vote.CryptographyManager
-import com.kevinwei.vote.SHARED_PREFS_FILENAME
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import com.kevinwei.vote.*
 import com.kevinwei.vote.databinding.ActivityLoginBinding
-
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
+    private val loginWithPasswordViewModel by viewModels<LoginViewModel>()
+//    private lateinit var navController: NavController
+
     private val cryptoManager = CryptographyManager()
     private val ciphertextWrapper
         get() = cryptoManager.getCiphertextWrapperFromSharedPrefs(
@@ -29,15 +34,13 @@ class LoginActivity : AppCompatActivity() {
     private val AUTHORIZED_BIOMETRICS =
         (Authenticators.DEVICE_CREDENTIAL or Authenticators.BIOMETRIC_STRONG)
 
-    private val loginWithPasswordViewModel by viewModels<LoginViewModel>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         setupLoginForPassword()
     }
+
 
     private fun setupLoginForPassword() {
         loginWithPasswordViewModel.loginWithPasswordFormState.observe(
@@ -59,6 +62,9 @@ class LoginActivity : AppCompatActivity() {
             if (loginResult.success) {
                 Toast.makeText(this, "Logged In", Toast.LENGTH_LONG).show()
 
+                // Navigate to MainIntent
+                val intent = Intent(this,MainActivity::class.java).apply {}
+                startActivity(intent)
             }
         })
 

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/loginActivity">
+
+    <activity
+        android:id="@+id/loginActivity"
+        android:label="activity_login"
+        tools:layout="@layout/activity_login">
+        <action
+            android:id="@+id/action_loginActivity_to_mainActivity"
+            app:destination="@id/mainActivity" />
+    </activity>
+
+
+
+    <activity
+        android:id="@+id/electionActivity"
+        android:name="com.kevinwei.vote.activities.election.ElectionActivity"
+        android:label="activity_election"
+        tools:layout="@layout/activity_election" >
+        <action
+            android:id="@+id/action_electionActivity_to_ballotActivity"
+            app:destination="@id/ballotActivity" />
+    </activity>
+    <activity
+        android:id="@+id/ballotActivity"
+        android:name="com.kevinwei.vote.activities.ballot.BallotActivity"
+        android:label="activity_ballot"
+        tools:layout="@layout/activity_ballot" >
+        <action
+            android:id="@+id/action_ballotActivity_to_ballotConfirmFragment"
+            app:destination="@id/ballotConfirmFragment" />
+    </activity>
+    <activity
+        android:id="@+id/registerActivity"
+        android:name="com.kevinwei.vote.activities.register.RegisterActivity"
+        android:label="activity_register"
+        tools:layout="@layout/activity_register" />
+    <activity
+        android:id="@+id/ballotConfirmFragment"
+        android:name="com.kevinwei.vote.activities.ballot.BallotConfirmFragment"
+        android:label="activity_confirm"
+        tools:layout="@layout/activity_confirm" >
+        <action
+            android:id="@+id/action_ballotConfirmFragment_to_electionActivity"
+            app:destination="@id/electionActivity" />
+    </activity>
+    <activity
+        android:id="@+id/enableBiometricActivity"
+        android:name="com.kevinwei.vote.activities.settings.EnableBiometricActivity"
+        android:label="activity_enable_biometric"
+        tools:layout="@layout/activity_enable_biometric" >
+        <action
+            android:id="@+id/action_enableBiometricActivity_to_electionActivity"
+            app:destination="@id/electionActivity" />
+    </activity>
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.kevinwei.vote.MainActivity"
+        android:label="activity_main"
+        tools:layout="@layout/activity_main" />
+</navigation>
