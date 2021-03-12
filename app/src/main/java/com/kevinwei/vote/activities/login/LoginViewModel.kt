@@ -9,6 +9,12 @@ import com.kevinwei.vote.model.User
 
 class LoginViewModel : ViewModel() {
 
+//    enum class AuthenticationState {
+//        AUTHENTICATED,
+//        UNAUTHENTICATED,
+//        INVALID_AUTHENTICATION
+//    }
+
     private val _loginForm = MutableLiveData<LoginFormState>()
     val loginWithPasswordFormState: LiveData<LoginFormState> = _loginForm
 

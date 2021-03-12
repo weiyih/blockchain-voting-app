@@ -4,11 +4,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.kevinwei.vote.R
-import com.kevinwei.vote.databinding.ActivityLoginBinding
-import com.kevinwei.vote.databinding.CardElectionBinding
 import com.kevinwei.vote.model.Election
 
 class ElectionAdapter : RecyclerView.Adapter<ElectionAdapter.ViewHolder>() {

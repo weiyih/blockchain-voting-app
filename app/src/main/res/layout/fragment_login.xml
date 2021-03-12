@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.login.LoginActivity">
+    android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"
+    tools:context=".activities.login.LoginFragment">
 
     <!--  Email Input  -->
     <com.google.android.material.textfield.TextInputLayout
@@ -117,7 +118,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/powered_by_logo" />
 
-    <!-- Guidelin dividing City logo from input -->
+    <!-- Guideline dividing City logo from input -->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineTop"
         android:layout_width="wrap_content"
