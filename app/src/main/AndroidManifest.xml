@@ -13,26 +13,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EVoting">
         <activity android:name=".MainActivity"
-            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
-            <intent-filter>
+            android:theme="@style/AppTheme">
+            <intent-filter>+
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--        <activity android:name=".activities.settings.EnableBiometricActivity" />-->
-        <!--        <activity-->
-        <!--            android:name=".activities.login.LoginFragment"-->
-        <!--            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">-->
-        <!--            <intent-filter>-->
-        <!--                <action android:name="android.intent.action.MAIN" />-->
 
-        <!--                <category android:name="android.intent.category.LAUNCHER" />-->
-        <!--            </intent-filter>-->
-        <!--        </activity>-->
-        <!--        <activity android:name=".activities.ballot.BallotConfirmFragment" />-->
-        <!--        <activity android:name=".activities.ballot.BallotActivity" />-->
-        <!--        <activity android:name=".activities.election.ElectionActivity" />-->
-        <!--        <activity android:name=".activities.register.RegisterActivity" />-->
     </application>
 
 </manifest>

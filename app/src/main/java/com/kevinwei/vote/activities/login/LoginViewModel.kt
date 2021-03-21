@@ -23,11 +23,8 @@ class LoginViewModel : ViewModel() {
     val loginResult: LiveData<LoginResult> = _loginResult
 
     // Updates the display text of the login button
-    // Checks for biometric hardware enabled
     // Checks if user input password
     // Checks if user password is deleted
-
-
     fun onLoginDataChange(username: String, password: String) {
         if (!isUsernameValid(username)) {
             _loginForm.value = FailedLoginFormState(usernameError = R.string.invalid_username)
@@ -38,18 +35,7 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-
-    /*
-    https://android.googlesource.com/platform/frameworks/base/+/81aa097/core/java/android/util/Patterns.java
-    EMAIL_ADDRESS Pattern
-    "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
-    "\\@" +
-    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
-    "(" +
-    "\\." +
-    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
-    ")+"
-     */
+    // https://android.googlesource.com/platform/frameworks/base/+/81aa097/core/java/android/util/Patterns.java
     fun isUsernameValid(username: String): Boolean {
         return if (username.contains('@')) {
             Patterns.EMAIL_ADDRESS.matcher(username).matches()

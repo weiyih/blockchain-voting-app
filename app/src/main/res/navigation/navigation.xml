@@ -9,9 +9,17 @@
         android:id="@+id/loginFragment"
         android:name="com.kevinwei.vote.activities.login.LoginFragment"
         android:label="LoginFragment">
+        <action
+            android:id="@+id/action_loginFragment_to_electionFragment"
+            app:destination="@id/electionFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/electionFragment"
+        android:name="com.kevinwei.vote.activities.election.ElectionFragment"
+        android:label="fragment_election"
+        tools:layout="@layout/fragment_election" />
 
-<!--    <activity-->
+    <!--    <activity-->
 <!--        android:id="@+id/loginActivity"-->
 <!--        android:label="activity_login"-->
 <!--        tools:layout="@layout/fragment_login">-->
