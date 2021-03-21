@@ -9,7 +9,6 @@ import com.kevinwei.vote.R
 import com.kevinwei.vote.model.Election
 
 class ElectionAdapter : RecyclerView.Adapter<ElectionAdapter.ViewHolder>() {
-
     // TODO("change later-data changes redraws the whole list")
     var data = listOf<Election>()
         set(value) {
@@ -17,14 +16,14 @@ class ElectionAdapter : RecyclerView.Adapter<ElectionAdapter.ViewHolder>() {
             notifyDataSetChanged()
         }
 
-
     // Access to card elements
     // TODO Convert to use data binding
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // TODO - convert to cardView?
-        val electionTitle: TextView = view.findViewById(R.id.election_title)
-        val electionDescription: TextView = view.findViewById(R.id.election_description)
+        private val electionTitle: TextView = itemView.findViewById(R.id.election_title)
+        private val electionDescription: TextView = itemView.findViewById(R.id.election_description)
 
+        // Binding UI to election data
         fun bind(item: Election) {
             electionTitle.text = item.electionName.toString()
             electionDescription.text = item.electionDescription.toString()
@@ -37,7 +36,6 @@ class ElectionAdapter : RecyclerView.Adapter<ElectionAdapter.ViewHolder>() {
                 .inflate(R.layout.card_election, parent, false)
         return ViewHolder(view)
     }
-
 
     // Binds ViewHolder with data
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
