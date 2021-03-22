@@ -7,7 +7,6 @@ buildscript {
         gson_version = "2.8.6"
         version_retrofit = "2.9.0"
         version_moshi = "1.11.0"
-
     }
 
     repositories {
@@ -22,6 +21,7 @@ buildscript {
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
         classpath "androidx.biometric:biometric:$biometric_version"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigation_version"
     }
 }
 
