@@ -17,7 +17,16 @@
         android:id="@+id/electionFragment"
         android:name="com.kevinwei.vote.activities.election.ElectionFragment"
         android:label="fragment_election"
-        tools:layout="@layout/fragment_election" />
+        tools:layout="@layout/fragment_election" >
+        <action
+            android:id="@+id/action_electionFragment_to_ballotFragment"
+            app:destination="@id/ballotFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/ballotFragment"
+        android:name="com.kevinwei.vote.activities.ballot.BallotFragment"
+        android:label="fragment_ballot"
+        tools:layout="@layout/fragment_ballot" />
 
     <!--    <activity-->
 <!--        android:id="@+id/loginActivity"-->
