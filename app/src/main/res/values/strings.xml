@@ -19,4 +19,12 @@
     <string name="election">Election</string>
     <string name="vote_in">vote</string>
     <string name="city_title">City of Oakville</string>
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="enable_biometrics">Enable hardware biometric</string>
+    <string name="security_header">Security</string>
+    <string name="user_interface">User Interface</string>
+    <string name="help">Help</string>
+    <string name="notification_reminders">Notifications of upcoming elections</string>
+    <string name="language">Language</string>
 </resources>
