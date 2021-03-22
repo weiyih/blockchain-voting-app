@@ -1,49 +1,57 @@
 package com.kevinwei.vote.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.kevinwei.vote.R
+import com.kevinwei.vote.databinding.CardElectionBinding
 import com.kevinwei.vote.model.Election
 
-class ElectionAdapter : RecyclerView.Adapter<ElectionAdapter.ViewHolder>() {
-    // TODO("change later-data changes redraws the whole list")
-    var data = listOf<Election>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
+class ElectionAdapter(val clickListener: ElectionVoteListener) :
+    ListAdapter<Election, ElectionAdapter.ViewHolder>(ElectionDiffCallback()) {
+
+    // Bind UI
+    class ViewHolder private constructor(val binding: CardElectionBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(item: Election, clickListener: ElectionVoteListener) {
+            binding.election = item
+            binding.clickListener = clickListener
+            binding.executePendingBindings()
         }
 
-    // Access to card elements
-    // TODO Convert to use data binding
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        // TODO - convert to cardView?
-        private val electionTitle: TextView = itemView.findViewById(R.id.election_title)
-        private val electionDescription: TextView = itemView.findViewById(R.id.election_description)
-
-        // Binding UI to election data
-        fun bind(item: Election) {
-            electionTitle.text = item.electionName.toString()
-            electionDescription.text = item.electionDescription.toString()
+        companion object {
+            fun from(parent: ViewGroup): ViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = CardElectionBinding.inflate(layoutInflater, parent, false)
+                return ViewHolder(binding)
+            }
         }
     }
 
     // Creates and inflates view
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.card_election, parent, false)
-        return ViewHolder(view)
+        return ViewHolder.from(parent)
     }
 
     // Binds ViewHolder with data
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val election = data[position]
-        viewHolder.bind(election)
+        val election = getItem(position)
+        viewHolder.bind(election, clickListener)
+    }
+}
+
+class ElectionDiffCallback: DiffUtil.ItemCallback<Election>() {
+    override fun areItemsTheSame(oldItem: Election, newItem: Election): Boolean {
+        return oldItem.electionId == newItem.electionId
     }
 
-    override fun getItemCount(): Int {
-        return data.size
+    override fun areContentsTheSame(oldItem: Election, newItem: Election): Boolean {
+        return oldItem == newItem
     }
+}
+
+class ElectionVoteListener(val clickListener: (election: String) -> Unit) {
+    fun onClick(election: Election) = clickListener(election.electionId)
 }

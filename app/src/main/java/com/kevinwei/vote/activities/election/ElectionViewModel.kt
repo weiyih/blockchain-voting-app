@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kevinwei.vote.model.Election
 import com.kevinwei.vote.network.ElectionsApi
-import com.kevinwei.vote.network.ElectionsApiService
 import kotlinx.coroutines.launch
 
 import java.lang.Exception
@@ -44,5 +43,17 @@ class ElectionViewModel:ViewModel() {
 //                throw Exception(_data.value)
             }
         }
+    }
+
+
+    // Navigation
+    private val _navigateToBallot = MutableLiveData<String?>()
+    val navigateToBallot: LiveData<String?>
+        get() = _navigateToBallot
+
+    // Trigger on BallotFragment
+    // TODO("call on fragment observer")
+    fun doneNavigating() {
+        _navigateToBallot.value = null
     }
 }

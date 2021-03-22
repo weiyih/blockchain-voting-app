@@ -1,7 +1,10 @@
 package com.kevinwei.vote.model
 
+import android.os.Parcelable
 import com.squareup.moshi.Json
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Election(
     @Json(name = "election_id")
     val electionId: String,
@@ -32,7 +35,7 @@ data class Election(
 
     @Json(name = "updated_at")
     val updatedAt: String,
-)
+) : Parcelable
 
 //    election_id: '9cd5f582-75e5-4bee-b451-e5417c18e761',
 //    election_name: 'Oakville Municipal Election 2022',
