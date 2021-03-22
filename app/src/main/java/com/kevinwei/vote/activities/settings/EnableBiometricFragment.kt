@@ -1,27 +1,28 @@
 package com.kevinwei.vote.activities.settings
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.kevinwei.vote.R
+import com.kevinwei.vote.databinding.FragmentEnableBiometricBinding
 
 class EnableBiometricFragment : Fragment() {
     private var _binding: FragmentEnableBiometricBinding? = null
-    private var binding get() = _binding!!
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return super.onCreateView(inflater, container, savedInstanceState)
+        _binding = FragmentEnableBiometricBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        _binding = null
     }
 
 
