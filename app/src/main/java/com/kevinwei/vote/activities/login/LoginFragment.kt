@@ -16,6 +16,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.kevinwei.vote.*
 import com.kevinwei.vote.databinding.FragmentLoginBinding
+import com.kevinwei.vote.security.SessionManager
 
 class LoginFragment : Fragment() {
 
@@ -26,8 +27,6 @@ class LoginFragment : Fragment() {
     private lateinit var navController: NavController
 
     private val cryptoManager = CryptographyManager()
-
-
     private val ciphertextWrapper
         get() = cryptoManager.getCiphertextWrapperFromSharedPrefs(
                 requireActivity().applicationContext,
@@ -75,10 +74,10 @@ class LoginFragment : Fragment() {
 
                     when (loginState) {
                         is SuccessLoginFormState ->
-                            binding!!.btnLogin!!.isEnabled = loginState.isDataValid
+                            binding.btnLogin.isEnabled = loginState.isDataValid
                         is FailedLoginFormState -> {
-                            loginState.usernameError?.let { binding!!.username.error = getString(it) }
-                            loginState.passwordError?.let { binding!!.password.error = getString(it) }
+                            loginState.usernameError?.let { binding.username.error = getString(it) }
+                            loginState.passwordError?.let { binding.password.error = getString(it) }
                         }
                     }
                 })
@@ -103,16 +102,15 @@ class LoginFragment : Fragment() {
 
         binding.username.editText?.doAfterTextChanged {
             loginWithPasswordViewModel.onLoginDataChange(
-                    binding!!.username.editText.toString(),
-                    binding!!.password.editText.toString()
+                    binding.username.editText.toString(),
+                    binding.password.editText.toString()
             )
         }
 
         binding.btnLogin.setOnClickListener {
-            Toast.makeText(context,"Login Button",Toast.LENGTH_LONG).show()
             loginWithPasswordViewModel.loginWithPassword(
-                    binding!!.username.editText.toString(),
-                    binding!!.password.editText.toString()
+                    binding.username.editText.toString(),
+                    binding.password.editText.toString()
             )
         }
     }
