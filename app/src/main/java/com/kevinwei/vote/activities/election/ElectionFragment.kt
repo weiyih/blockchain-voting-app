@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.kevinwei.vote.adapter.ElectionAdapter
 import com.kevinwei.vote.adapter.ElectionVoteListener
 import com.kevinwei.vote.databinding.FragmentElectionBinding
@@ -38,12 +39,13 @@ class ElectionFragment : Fragment() {
     }
 
     private fun setupElectionList() {
-        val electionAdapter = ElectionAdapter(ElectionVoteListener { electionId ->
-            Toast.makeText(
-                context,
-                "${electionId}",
-                Toast.LENGTH_LONG
-            ).show()
+        val electionAdapter = ElectionAdapter(ElectionVoteListener { election ->
+//            Toast.makeText(
+//                context,
+//                "${election.electionName}",
+//                Toast.LENGTH_SHORT
+//            ).show()
+            electionViewModel.onElectionClicked(election)
         })
         binding.electionList.adapter = electionAdapter
 
@@ -56,13 +58,15 @@ class ElectionFragment : Fragment() {
     }
 
     private fun setupBallotNavigation() {
-//        electionViewModel.navigateToBallot.observe(viewLifecycleOwner, Observer { electionData ->
-//            electionData?.let {
-//                navController.navigate(
-//                    ElectionFragmentDirections.actionElectionFragmentToBallotFragment(electionData)
-//                )
-//            }
-//        })
+        electionViewModel.navigateToBallot.observe(viewLifecycleOwner, Observer { election ->
+            election?.let {
+                this.findNavController().navigate(
+                    ElectionFragmentDirections.actionElectionFragmentToBallotFragment(election)
+                )
+                // Reset state to make sure we only navigate once, even if the device has a configuration change.
+                electionViewModel.onBallotFragmentNavigated()
+            }
+        })
     }
 
     val testList = listOf(

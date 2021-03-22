@@ -62,6 +62,8 @@
                     android:layout_weight="1"
                     android:text="@string/vote_in"
                     android:onClick="@{() -> clickListener.onClick(election)}"/>
+<!--                    android:onClick="@{() -> clickListener.onClick(election)}"/>-->
+
             </LinearLayout>
             <!-- Buttons -->
             <!--        <LinearLayout-->

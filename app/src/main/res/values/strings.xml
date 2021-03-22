@@ -18,4 +18,5 @@
     <string name="content_description_setting">Settings</string>
     <string name="election">Election</string>
     <string name="vote_in">vote</string>
+    <string name="city_title">City of Oakville</string>
 </resources>
