@@ -4,6 +4,7 @@
         <SwitchPreferenceCompat
             app:key="biometric"
             app:title="@string/enable_biometrics"
+            app:summary="@string/biometrics_summary"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
