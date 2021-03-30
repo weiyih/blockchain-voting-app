@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">eVoting</string>
-    <string name="btn_login">Login</string>
-    <string name="txt_email">Email or phone</string>
+    <string name="btn_login">login</string>
+    <string name="txt_email">Email</string>
     <string name="txt_password">Password</string>
     <string name="btn_register">Register to vote online</string>
     <string name="powered_by" translatable="false">powered by eVotes</string>
@@ -18,7 +18,7 @@
     <string name="content_description_setting">Settings</string>
     <string name="election">Election</string>
     <string name="vote_in">vote</string>
-    <string name="city_title">City of Oakville</string>
+    <string name="city_title">Town of Oakville</string>
     <!-- Sync Preferences -->
     <string name="sync_title">Sync email periodically</string>
     <string name="enable_biometrics">Enable hardware biometric</string>
@@ -28,4 +28,8 @@
     <string name="notification_reminders">Notifications of upcoming elections</string>
     <string name="language">Language</string>
     <string name="biometrics_summary">Use biometrics to authenticate user</string>
+    <string name="btn_login_biometric">login with biometric</string>
+    <!-- Shared Preference strings -->
+    <string name="saved_biometric" translatable="false">biometric</string>
+    <string name="username">username</string>
 </resources>

@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">eVoting</string>
-    <string name="txt_email">Courriel ou numéro de téléphone</string>
+    <string name="txt_email">Courriel</string>
     <string name="txt_password">Mot de passe</string>
-    <string name="btn_login">Connexion</string>
+    <string name="btn_login">connexion</string>
     <string name="btn_register">S\'inscrire pour voter</string>
+    <string name="btn_login_biometric">connexion avec biométrique</string>
+    <string name="content_description_election">élection</string>
+    <string name="content_description_setting">réglages</string>
+    <string name="election">élection</string>
+    <string name="help">aider</string>
+    <string name="invalid_username">email invalide</string>
+    <string name="city_title">La ville d\'Oakville</string>
 </resources>
