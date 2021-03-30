@@ -39,6 +39,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    // TODO - SharedPreference for username/email
+
 
     private fun showBiometricPrompt() {
         val biometricManager = BiometricManager.from(this.requireContext())
@@ -63,14 +65,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     @TargetApi(30)
     private fun launchBiometricEnroll() {
-
         val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
             putExtra(
                 Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
                 AUTHORIZED_BIOMETRICS
             )
         }
-
+        startActivity(enrollIntent)
     }
 
     @TargetApi(28)
