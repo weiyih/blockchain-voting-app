@@ -29,7 +29,8 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:singleLine="true"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Password Input -->
@@ -64,7 +65,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="64dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="64dp"
         android:layout_marginEnd="64dp"
         android:text="@string/btn_login"
         app:layout_constraintEnd_toEndOf="parent"
