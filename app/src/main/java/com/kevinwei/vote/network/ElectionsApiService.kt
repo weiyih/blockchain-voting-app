@@ -2,6 +2,7 @@ package com.kevinwei.vote.network
 
 import com.kevinwei.vote.model.BallotJson
 import com.kevinwei.vote.model.Election
+import com.kevinwei.vote.model.User
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Call
@@ -25,8 +26,7 @@ private val retrofit = Retrofit.Builder()
 // TODO - Look into retrofit documention
 interface ElectionsApiService {
     @POST("login")
-    fun login(username:String, password:String):
-            Call<String>
+    fun login(username:String, password:String): User
 
     @GET("elections")
     suspend fun getElections(): List<Election>
