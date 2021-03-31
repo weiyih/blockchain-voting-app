@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
 import android.view.ViewGroup
+import android.view.WindowInsetsController
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
@@ -50,7 +52,9 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
-        requireActivity().actionBar?.hide()
+
+        // Hide top action bar on login fragment
+        (requireActivity() as MainActivity).supportActionBar!!.hide()
 
         sharedPref = this.requireActivity().getPreferences(Context.MODE_PRIVATE)
         navController = findNavController()
@@ -59,10 +63,13 @@ class LoginFragment : Fragment() {
         return binding.root
     }
 
+
     override fun onDestroyView() {
         super.onDestroyView()
+        (requireActivity() as MainActivity).supportActionBar!!.show()
         _binding = null
     }
+
 
     private fun getRememberedUsername() {
         val username = sharedPref.getString(getString(R.string.username), "")
@@ -105,23 +112,20 @@ class LoginFragment : Fragment() {
 
         // Observe the loginResult from the /v1/login
         loginViewModel.loginResult.observe(viewLifecycleOwner, Observer {
-            val loginResult = it ?: return@Observer
-            if (loginResult.SUCCESS) {
 
-                when (User.verified) {
-                    true -> navController.navigate(R.id.action_loginFragment_to_electionFragment)
-                    // false -> navController.navigate(R.id.action_loginFragment_to_verifyFragment)
-                }
+            // TODO ("Replace")
+            navController.navigate(R.id.action_loginFragment_to_electionFragment)
 
-//                loginViewModel.user.observe(viewLifecycleOwner, Observer {
-//                    when (it.verified) {
-//                        true -> navController.navigate(R.id.action_loginFragment_to_electionFragment)
-////                        false -> navController.navigate(R.id.action_loginFragment_to_verifyFragment)
-//                    }
-//                })
-            } else if (!loginResult.SUCCESS) {
-                // Display error
-            }
+//            val loginResult = it ?: return@Observer
+//            if (loginResult.SUCCESS) {
+//
+//                when (User.verified) {
+//                    true -> navController.navigate(R.id.action_loginFragment_to_electionFragment)
+//                    // false -> navController.navigate(R.id.action_loginFragment_to_verifyFragment)
+//                }
+//            } else if (!loginResult.SUCCESS) {
+//                // Display error
+//            }
         })
 
         //
