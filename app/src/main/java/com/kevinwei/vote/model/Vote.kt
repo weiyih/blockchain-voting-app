@@ -2,8 +2,8 @@ package com.kevinwei.vote.model
 
 import com.squareup.moshi.Json
 
-// JSON object of the ballot to be displayed for a specific district and election
-data class BallotJson(
+// JSON object of the submitted ballot vote
+data class Vote (
     @Json(name = "election_id")
     val electionId: String,
 
@@ -13,6 +13,9 @@ data class BallotJson(
     @Json(name = "district_name")
     val districtName: String,
 
-    @Json(name = "candidate_list")
-    val candidateList: List<Candidate>
+    @Json(name = "candidate_id")
+    val candidateId: String,
+
+    @Json(name = "timestamp")
+    val timestamp: String
 )

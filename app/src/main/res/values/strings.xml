@@ -32,4 +32,7 @@
     <!-- Shared Preference strings -->
     <string name="saved_biometric" translatable="false">biometric</string>
     <string name="username">username</string>
+    <string name="upcoming">The upcoming elections voters are eligible to participate in.</string>
+    <string name="ballot">Ballot</string>
+    <string name="submit">submit vote</string>
 </resources>

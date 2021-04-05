@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
 
     </style>
+
     <style name="DividerMiddle">
         <item name="android:color">#000000</item>
         <item name="android:alpha">0.12</item>

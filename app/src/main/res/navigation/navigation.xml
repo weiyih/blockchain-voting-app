@@ -3,20 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/electionFragment">
 
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.kevinwei.vote.activities.login.LoginFragment"
-        android:label="LoginFragment">
-        <action
-            android:id="@+id/action_loginFragment_to_electionFragment"
-            app:destination="@id/electionFragment" />
-    </fragment>
+        android:label="LoginFragment"/>
     <fragment
         android:id="@+id/electionFragment"
         android:name="com.kevinwei.vote.activities.election.ElectionFragment"
-        android:label="fragment_election"
+        android:label="@string/election"
         tools:layout="@layout/fragment_election" >
         <action
             android:id="@+id/action_electionFragment_to_ballotFragment"
@@ -25,7 +21,7 @@
     <fragment
         android:id="@+id/ballotFragment"
         android:name="com.kevinwei.vote.activities.ballot.BallotFragment"
-        android:label="fragment_ballot"
+        android:label="@string/ballot"
         tools:layout="@layout/fragment_ballot">
         <argument
             android:name="election"
@@ -33,4 +29,8 @@
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.kevinwei.vote.activities.settings.SettingsFragment"
+        android:label="SettingsFragment" />
 </navigation>
