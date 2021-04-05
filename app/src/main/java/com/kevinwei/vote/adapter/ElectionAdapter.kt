@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kevinwei.vote.databinding.CardElectionBinding
 import com.kevinwei.vote.model.Election
 
-class ElectionAdapter(val clickListener: ElectionVoteListener) :
+class ElectionAdapter(private val clickListener: ElectionVoteListener) :
     ListAdapter<Election, ElectionAdapter.ViewHolder>(ElectionDiffCallback()) {
 
     // Bind UI

@@ -4,14 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
 import androidx.navigation.fragment.navArgs
+import com.kevinwei.vote.R
 import com.kevinwei.vote.adapter.BallotAdapter
+import com.kevinwei.vote.adapter.BallotVoteListener
+import com.kevinwei.vote.adapter.ElectionVoteListener
 import com.kevinwei.vote.databinding.FragmentBallotBinding
+import com.kevinwei.vote.model.Candidate
 
 class BallotFragment : Fragment() {
     private var _binding: FragmentBallotBinding? = null
     private val binding get() = _binding!!
+    private lateinit var navController: NavController
+    private val ballotViewModel by viewModels<BallotViewModel>()
 
     val args: BallotFragmentArgs by navArgs()
 
@@ -20,13 +32,16 @@ class BallotFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+//        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_ballot, container, false)
         _binding = FragmentBallotBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupBallotList()
+        setupSubmitBallot()
     }
 
     override fun onDestroy() {
@@ -39,10 +54,48 @@ class BallotFragment : Fragment() {
         binding.electionTitle.text = election?.electionName
 
 //        binding.electionDistrict.text =
+//        binding.electionDistrict.text =
 
 
+        val ballotAdapter = BallotAdapter(
+            ballotViewModel,
+            BallotVoteListener { candidate ->
+//            ballotViewModel.onCandidateClick(candidate)
+            Toast.makeText(requireContext(), "${candidate.candidateName} ${candidate.selected.toString()}", Toast.LENGTH_SHORT).show()
+        })
 
-        val ballotAdapter = BallotAdapter()
+        ballotViewModel.selectedCandidate.observe(viewLifecycleOwner, Observer { selected ->
+
+            when (selected) {
+                null -> binding.submitVote.isEnabled = false
+                else -> {
+                    binding.submitVote.isClickable = true
+                    binding.submitVote.isEnabled = true
+                }
+            }
+        })
+
         binding.candidateList.adapter = ballotAdapter
+
+
+//        ballotViewModel.getBallot(election!!.electionId)
+        ballotViewModel.candidateData.observe(viewLifecycleOwner, Observer { candidateList ->
+            Toast.makeText(requireContext(), "List Updated", Toast.LENGTH_SHORT).show()
+            ballotAdapter.submitList(candidateList)
+        })
+    }
+
+    private fun setupSubmitBallot() {
+//        TODO("Observe if candidate has been selected")
+//        ballotViewModel.selected
+
+        binding.submitVote.setOnClickListener { _ ->
+            displayBiometricPrompt()
+        }
+
+    }
+
+    private fun displayBiometricPrompt() {
+        Toast.makeText(requireContext(), "BIO PROMPT", Toast.LENGTH_SHORT).show()
     }
 }

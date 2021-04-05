@@ -2,39 +2,54 @@ package com.kevinwei.vote.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.kevinwei.vote.activities.ballot.BallotViewModel
 import com.kevinwei.vote.databinding.CardBallotBinding
-import com.kevinwei.vote.model.Vote
 import com.kevinwei.vote.model.Candidate
-import com.kevinwei.vote.model.Election
 
-class BallotAdapter(val clickListener: BallotVoteListener) :
+class BallotAdapter(
+    private val viewModel: BallotViewModel,
+    private val clickListener: BallotVoteListener
+) :
     ListAdapter<Candidate, BallotAdapter.ViewHolder>(BallotDiffCallback()) {
 
     // TODO ("District and election data")
-    class ViewHolder private constructor(val binding: CardBallotBinding) :
+    inner class ViewHolder(private val binding: CardBallotBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        private var candidate: Candidate? = null
 
-        fun bind(item: Candidate, clickListener: BallotVoteListener) {
-            binding.candidate = item
+        init {
+            // Enable only 1 selection
+            binding.checkedCandidate.setOnClickListener{
+                val candidate = binding.candidate!!
+                viewModel.onCandidateSelected(adapterPosition, candidate)
+                notifyDataSetChanged()
+            }
+        }
+
+
+        fun bind(candidate: Candidate, clickListener: BallotVoteListener) {
+//            this.candidate = candidate // ? Not sure if i can just use databinding here
+            binding.viewModel = viewModel
+            binding.candidate = candidate
             binding.clickListener = clickListener
             binding.executePendingBindings()
         }
-
-        companion object {
-            fun from(parent: ViewGroup): BallotAdapter.ViewHolder {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = CardBallotBinding.inflate(layoutInflater, parent, false)
-                return ViewHolder(binding)
-            }
-        }
     }
+
 
     // Creates and inflates view
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BallotAdapter.ViewHolder {
-        return BallotAdapter.ViewHolder.from(parent)
+        val layoutInflater = LayoutInflater.from(parent.context)
+//        val binding = DataBindingUtil.inflate(layoutInflater, R.layout.card_ballot ,parent, false )
+        val binding = CardBallotBinding.inflate(layoutInflater, parent, false)
+        return ViewHolder(binding)
+//        return ViewHolder.from(parent)
     }
 
     // Binds ViewHolder with data
@@ -44,10 +59,14 @@ class BallotAdapter(val clickListener: BallotVoteListener) :
     }
 }
 
-// Note: This is useless as the list should not change
+class BallotVoteListener(val clickListener: (candidate: Candidate) -> Unit) {
+    fun onClick(candidate: Candidate) = clickListener(candidate)
+}
+
+
 class BallotDiffCallback : DiffUtil.ItemCallback<Candidate>() {
     override fun areItemsTheSame(oldItem: Candidate, newItem: Candidate): Boolean {
-        return oldItem.candidateId == newItem.candidateId
+        return oldItem.selected == newItem.selected
     }
 
     override fun areContentsTheSame(oldItem: Candidate, newItem: Candidate): Boolean {
@@ -55,6 +74,6 @@ class BallotDiffCallback : DiffUtil.ItemCallback<Candidate>() {
     }
 }
 
-class BallotVoteListener(val clickListener: (election: Election) -> Unit) {
-    fun onClick(election: Election) = clickListener(election)
-}
+
+
+

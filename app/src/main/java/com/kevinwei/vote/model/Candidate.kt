@@ -9,6 +9,7 @@ data class Candidate(
     @Json(name = "candidate_name")
     val candidateName: String,
 
-    @Json(name = "candidate_description")
-    val candidateDescription: String,
+    // Display logic
+    var selected: Boolean = false
+
 )
