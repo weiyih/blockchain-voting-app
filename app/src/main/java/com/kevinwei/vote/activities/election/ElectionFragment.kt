@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
@@ -12,6 +13,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.kevinwei.vote.R
+import com.kevinwei.vote.activities.login.LoginViewModel
 import com.kevinwei.vote.adapter.ElectionAdapter
 import com.kevinwei.vote.adapter.ElectionVoteListener
 import com.kevinwei.vote.databinding.FragmentElectionBinding
@@ -22,6 +24,14 @@ class ElectionFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var navController: NavController
     private val electionViewModel by viewModels<ElectionViewModel>()
+    private val loginViewModel by activityViewModels<LoginViewModel>()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        navController = findNavController()
+
+        observeAuthenticationState()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,9 +39,6 @@ class ElectionFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentElectionBinding.inflate(inflater, container, false)
-        setupElectionList()
-        setupBallotNavigation()
-
         setHasOptionsMenu(true)
         return binding.root
     }
@@ -55,6 +62,26 @@ class ElectionFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return NavigationUI.onNavDestinationSelected(item, requireView().findNavController())
                 || super.onOptionsItemSelected(item)
+    }
+
+    /*
+    Determines if user has authenticated/logged in
+    */
+    private fun observeAuthenticationState() {
+        loginViewModel.authState.observe(viewLifecycleOwner, Observer { authState ->
+
+            Toast.makeText(this.requireContext(), authState.toString(), Toast.LENGTH_SHORT).show()
+
+            when (authState) {
+                LoginViewModel.AuthenticationState.AUTHENTICATED -> {
+                    setupElectionList()
+                    setupBallotNavigation()
+                }
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> {
+                    navController.navigate(R.id.loginFragment)
+                }
+            }
+        })
     }
 
     private fun setupElectionList() {

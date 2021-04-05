@@ -3,6 +3,7 @@ package com.kevinwei.vote.activities.login
 import android.content.SharedPreferences
 import android.util.Log
 import android.util.Patterns
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,20 +18,28 @@ import java.lang.Exception
 
 class LoginViewModel : ViewModel() {
 
-    // LiveData of username and password fields
+    enum class AuthenticationState {
+        AUTHENTICATED, UNAUTHENTICATED;
+    }
+
+    private val _authState = MutableLiveData<AuthenticationState>()
+    val authState: LiveData<AuthenticationState> = _authState
+
+    // Input validation
     private val _loginForm = MutableLiveData<LoginFormState>()
     val loginFormState: LiveData<LoginFormState> = _loginForm
 
-    // loginResult
+    // Login Results
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
 
+    // User
     private val _user = MutableLiveData<User>()
-    val user: LiveData<User> =_user
+    val user: LiveData<User> = _user
 
-    // Updates the display text of the login button
-    // Checks if user input password
-    // Checks if user password is deleted
+    init {
+        _authState.value = AuthenticationState.UNAUTHENTICATED
+    }
 
     /*
     * Validates user input for username and password
@@ -40,7 +49,7 @@ class LoginViewModel : ViewModel() {
         // Checks if username is a valid email
         if (!isUsernameValid(username)) {
             _loginForm.value = FailedLoginFormState(usernameError = R.string.invalid_username)
-        // Checks if password is empty or greater than 7 characters
+            // Checks if password is empty or greater than 7 characters
         } else if (!isPasswordValid(password)) {
             _loginForm.value = FailedLoginFormState(passwordError = R.string.invalid_password)
         } else {
@@ -62,7 +71,7 @@ class LoginViewModel : ViewModel() {
     /*
     * Verifies if the password is not empty or the correct length
     */
-    fun isPasswordValid(password: String): Boolean{
+    fun isPasswordValid(password: String): Boolean {
         if (password.isEmpty()) {
             return true
         } else return password.length >= 8
@@ -80,23 +89,32 @@ class LoginViewModel : ViewModel() {
                     // TODO retrieve token from server to a transient object
                     // TODO - Handle server response
                     _loginResult.value = LoginResult(true)
+                    _authState.value = AuthenticationState.AUTHENTICATED
                 } catch (e: Exception) {
                     _loginResult.value = LoginResult(false)
+                    _authState.value = AuthenticationState.UNAUTHENTICATED
                 }
             }
         }
     }
 
     // TODO("get generated password_token used with biometric login")
-    fun loginWithBiometric(username:String, biometricPassword: String) {
+    fun loginWithBiometric(username: String, biometricPassword: String) {
         viewModelScope.launch {
             try {
                 _user.value = ElectionsApi.retrofitService.login(username, "biometric_token")
+                _authState.value = AuthenticationState.AUTHENTICATED
                 _loginResult.value = LoginResult(true)
             } catch (e: Exception) {
+                _authState.value = AuthenticationState.UNAUTHENTICATED
                 _loginResult.value = LoginResult(false)
             }
         }
+    }
+
+    fun testLogin() {
+        _authState.value = AuthenticationState.AUTHENTICATED
+        _loginResult.value = LoginResult(true)
     }
 }
 
