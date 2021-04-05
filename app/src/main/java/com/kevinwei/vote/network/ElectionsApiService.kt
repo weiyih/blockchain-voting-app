@@ -1,11 +1,10 @@
 package com.kevinwei.vote.network
 
-import com.kevinwei.vote.model.BallotJson
+import com.kevinwei.vote.model.Ballot
 import com.kevinwei.vote.model.Election
 import com.kevinwei.vote.model.User
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
@@ -32,7 +31,7 @@ interface ElectionsApiService {
     suspend fun getElections(): List<Election>
 
     @GET("ballots")
-    suspend fun getBallot(electionId:String): BallotJson
+    suspend fun getBallot(electionId:String): Ballot
 }
 
 // Lazy init Retrofit services (Computationally expensive)

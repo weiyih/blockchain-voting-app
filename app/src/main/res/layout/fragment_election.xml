@@ -6,33 +6,39 @@
     android:layout_height="match_parent"
     tools:context=".activities.election.ElectionFragment">
 
-    <TextView
-        android:id="@+id/city_title"
-        android:text="@string/city_title"
+    <LinearLayout
+        android:id="@+id/city_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="?attr/textAppearanceHeadline6"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:layout_margin="16dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent">
 
-<!--    <androidx.core.widget.NestedScrollView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="512dp"-->
-<!--        android:layout_margin="8dp"-->
-<!--        android:isScrollContainer="true"-->
-<!--        android:measureAllChildren="true"-->
-<!--        app:layout_constraintTop_toTopOf="@id/city_title">-->
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/election_list"
+        <TextView
+            android:id="@+id/city_title"
+            style="?attr/textAppearanceHeadline6"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/city_title"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+            android:layout_height="wrap_content"
+            android:text="@string/city_title"
+            app:layout_constraintTop_toTopOf="@id/city_text" />
 
-<!--    </androidx.core.widget.NestedScrollView>-->
+        <TextView
+            android:id="@+id/city_upcoming"
+            style="?attr/textAppearanceBody2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/upcoming" />
+    </LinearLayout>
 
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/election_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="8dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/city_text" />
 </androidx.constraintlayout.widget.ConstraintLayout>
