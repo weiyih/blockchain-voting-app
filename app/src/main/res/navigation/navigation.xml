@@ -8,7 +8,11 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.kevinwei.vote.activities.login.LoginFragment"
-        android:label="LoginFragment"/>
+        android:label="LoginFragment">
+        <action
+            android:id="@+id/action_loginFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/electionFragment"
         android:name="com.kevinwei.vote.activities.election.ElectionFragment"
@@ -32,5 +36,9 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.kevinwei.vote.activities.settings.SettingsFragment"
-        android:label="SettingsFragment" />
+        android:label="@string/setting" >
+        <action
+            android:id="@+id/action_settingsFragment_to_electionFragment"
+            app:destination="@id/electionFragment" />
+    </fragment>
 </navigation>

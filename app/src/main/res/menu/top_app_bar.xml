@@ -2,18 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-<!--    <item-->
-<!--        android:id="@+id/election"-->
-<!--        android:icon="@drawable/ic_baseline_ballot_24"-->
-<!--        android:title="@string/election"-->
-<!--        android:contentDescription="@string/content_description_election"-->
-<!--        app:showAsAction="never" />-->
-
     <item
-        android:id="@+id/settings"
+        android:id="@+id/settingsFragment"
         android:icon="@drawable/ic_baseline_admin_panel_settings_24"
         android:title="@string/setting"
         android:contentDescription="@string/content_description_setting"
-        app:showAsAction="never" />
+        app:showAsAction="always" />
 
 </menu>

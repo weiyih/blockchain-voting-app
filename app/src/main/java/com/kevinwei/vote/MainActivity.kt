@@ -17,6 +17,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val navController = this.findNavController(R.id.navHostFragment)
+
         NavigationUI.setupActionBarWithNavController(this, navController)
 
     }
@@ -25,8 +26,8 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-//    override fun onSupportNavigateUp(): Boolean {
-//        val navController = this.findNavController(R.id.navHostFragment)
-//        return navController.navigateUp()
-//    }
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = this.findNavController(R.id.navHostFragment)
+        return navController.navigateUp()
+    }
 }
