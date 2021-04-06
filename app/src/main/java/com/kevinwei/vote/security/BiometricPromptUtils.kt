@@ -1,6 +1,7 @@
 package com.kevinwei.vote.security
 
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
@@ -44,16 +45,19 @@ object BiometricPromptUtils {
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                 super.onAuthenticationError(errorCode, errString)
                 Log.d(TAG, "Code: $errorCode - $errString.")
+//                Toast.makeText(activity, "Biometric authentication cancelled", Toast.LENGTH_SHORT).show()
             }
 
             override fun onAuthenticationFailed() {
                 super.onAuthenticationFailed()
                 Log.d(TAG, "User biometric rejected.")
+                Toast.makeText(activity, "Biometric authentication failed", Toast.LENGTH_SHORT).show()
             }
 
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 super.onAuthenticationSucceeded(result)
                 Log.d(TAG, "Biometric authentication successful")
+                Toast.makeText(activity, "Biometric authentication successful", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -61,12 +65,27 @@ object BiometricPromptUtils {
     }
 
     // Configures how prompt should appear and behave
-    fun createPromptInfo(activity: AppCompatActivity): BiometricPrompt.PromptInfo =
+    fun enableBiometricPrompt(activity: AppCompatActivity): BiometricPrompt.PromptInfo =
         BiometricPrompt.PromptInfo.Builder().apply {
             setTitle(activity.getString(R.string.prompt_bio_title))
-            setSubtitle(activity.getString(R.string.prompt_bio_subtitle))
-            setDescription(activity.getString(R.string.prompt_bio_description))
+            setSubtitle(activity.getString(R.string.prompt_bio_subtitle_enable))
+            setConfirmationRequired(true)
+            setNegativeButtonText(activity.getString(R.string.cancel))
+        }.build()
+
+    fun loginBiometricPrompt(activity: AppCompatActivity): BiometricPrompt.PromptInfo =
+        BiometricPrompt.PromptInfo.Builder().apply {
+            setTitle(activity.getString(R.string.prompt_bio_title))
+            setSubtitle(activity.getString(R.string.prompt_bio_subtitle_enable))
             setConfirmationRequired(false)
-            setNegativeButtonText(activity.getString(R.string.prompt_bio_use_password))
+            setNegativeButtonText(activity.getString(R.string.cancel))
+        }.build()
+
+    fun voteBiometricPrompt(activity: AppCompatActivity): BiometricPrompt.PromptInfo =
+        BiometricPrompt.PromptInfo.Builder().apply {
+            setTitle(activity.getString(R.string.prompt_bio_title))
+            setSubtitle(activity.getString(R.string.prompt_bio_subtitle_vote))
+            setConfirmationRequired(false)
+            setNegativeButtonText(activity.getString(R.string.cancel))
         }.build()
 }

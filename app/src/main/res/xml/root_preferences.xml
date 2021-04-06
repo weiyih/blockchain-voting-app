@@ -2,7 +2,7 @@
 
     <PreferenceCategory app:title="@string/security_header">
         <SwitchPreferenceCompat
-            app:key="biometric"
+            app:key="@string/pref_biometric"
             app:title="@string/enable_biometrics"
             app:summary="@string/biometrics_summary"
             app:useSimpleSummaryProvider="true" />
@@ -10,7 +10,7 @@
 
     <PreferenceCategory app:title="@string/user_interface">
         <SwitchPreferenceCompat
-            app:key="notifications"
+            app:key="@string/pref_notification"
             app:title="Enable notifications"
             app:summary="@string/notification_reminders" />
 
