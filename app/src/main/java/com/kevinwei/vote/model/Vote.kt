@@ -1,8 +1,9 @@
 package com.kevinwei.vote.model
 
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-// JSON object of the submitted ballot vote
+@JsonClass(generateAdapter = true)
 data class Vote (
     @Json(name = "election_id")
     val electionId: String,

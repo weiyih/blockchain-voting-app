@@ -1,22 +1,21 @@
 package com.kevinwei.vote.activities.login
 
-import android.content.SharedPreferences
 import android.util.Log
 import android.util.Patterns
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kevinwei.vote.R
-import com.kevinwei.vote.model.Election
+import com.kevinwei.vote.model.LoginRequest
 import com.kevinwei.vote.model.User
 import com.kevinwei.vote.network.ElectionsApi
-import com.kevinwei.vote.security.BiometricPromptUtils
+import com.kevinwei.vote.network.NetworkResponse
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class LoginViewModel : ViewModel() {
+    private val TAG = "LoginViewModel"
 
     enum class AuthenticationState {
         AUTHENTICATED, UNAUTHENTICATED;
@@ -38,7 +37,9 @@ class LoginViewModel : ViewModel() {
     val user: LiveData<User> = _user
 
     init {
-        _authState.value = AuthenticationState.UNAUTHENTICATED
+        // TODO(UNAUTH)
+        _authState.value = AuthenticationState.AUTHENTICATED
+//        _authState.value = AuthenticationState.UNAUTHENTICATED
     }
 
     /*
@@ -60,7 +61,7 @@ class LoginViewModel : ViewModel() {
     /*    * Verifies if the username matches the default email pattern
     * https://android.googlesource.com/platform/frameworks/base/+/81aa097/core/java/android/util/Patterns.java
     */
-    fun isUsernameValid(username: String): Boolean {
+    private fun isUsernameValid(username: String): Boolean {
         return if (username.contains('@')) {
             Patterns.EMAIL_ADDRESS.matcher(username).matches()
         } else {
@@ -69,9 +70,9 @@ class LoginViewModel : ViewModel() {
     }
 
     /*
-    * Verifies if the password is not empty or the correct length
+    * Verifies if the password is the correct length
     */
-    fun isPasswordValid(password: String): Boolean {
+    private fun isPasswordValid(password: String): Boolean {
         if (password.isEmpty()) {
             return true
         } else return password.length >= 8
@@ -81,37 +82,78 @@ class LoginViewModel : ViewModel() {
     * Login with username and passwword
     */
     fun loginWithPassword(username: String, password: String) {
-        if (loginFormState.value is SuccessLoginFormState) {
-            viewModelScope.launch {
-                try {
+        viewModelScope.launch {
+            try {
+                // LoginFormState should always be SuccessLoginFormState
+                if (loginFormState.value is SuccessLoginFormState) {
+
+
+
+                    // TODO (" Loading screen")
                     // TODO("Pass in device information")
-                    val user = ElectionsApi.retrofitService.login(username, password)
+                    val loginRequest = LoginRequest(username, password)
+
+
+                    val response = ElectionsApi.client.login(loginRequest)
+                    Log.d("test", response.toString())
+
+                    when (response) {
+                        is NetworkResponse.Success -> {
+                            _user.value = response.body!!
+                            _authState.value = AuthenticationState.AUTHENTICATED
+                        }
+                        is NetworkResponse.Failure -> {
+
+                        }
+                        is NetworkResponse.NetworkError -> {
+
+                        }
+                        is NetworkResponse.UnknownError -> {
+
+                        }
+                    }
+
+//                    Log.d(TAG, result.message.toString())
+//                    _user.value = result
                     // TODO retrieve token from server to a transient object
                     // TODO - Handle server response
+
+
                     _loginResult.value = LoginResult(true)
                     _authState.value = AuthenticationState.AUTHENTICATED
-                } catch (e: Exception) {
-                    _loginResult.value = LoginResult(false)
-                    _authState.value = AuthenticationState.UNAUTHENTICATED
                 }
+            } catch (e: Exception) {
+                Log.d(TAG, e.message.toString())
+
+                _loginResult.value = LoginResult(false)
+                _authState.value = AuthenticationState.UNAUTHENTICATED
+            } finally {
+                // TODO (" Loading screen disabled")
             }
         }
     }
+
 
     // TODO("get generated password_token used with biometric login")
     fun loginWithBiometric(username: String, biometricPassword: String) {
         viewModelScope.launch {
             try {
-                _user.value = ElectionsApi.retrofitService.login(username, "biometric_token")
+                Log.d(TAG, "Logging in")
+                val loginRequest = LoginRequest(username, biometricPassword)
+                val result = ElectionsApi.client.login(loginRequest)
+//                Log.d(TAG, ""${result.message}")
+//                _user.value = result
                 _authState.value = AuthenticationState.AUTHENTICATED
                 _loginResult.value = LoginResult(true)
             } catch (e: Exception) {
+                Log.d(TAG, e.toString())
                 _authState.value = AuthenticationState.UNAUTHENTICATED
                 _loginResult.value = LoginResult(false)
             }
         }
     }
 
+    // TODO ("remove")
     fun testLogin() {
         _authState.value = AuthenticationState.AUTHENTICATED
         _loginResult.value = LoginResult(true)

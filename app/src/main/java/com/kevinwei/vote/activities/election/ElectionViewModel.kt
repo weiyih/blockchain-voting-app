@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kevinwei.vote.model.Election
 import com.kevinwei.vote.network.ElectionsApi
+import com.kevinwei.vote.network.NetworkResponse
 import kotlinx.coroutines.launch
 
 import java.lang.Exception
@@ -29,17 +30,26 @@ class ElectionViewModel : ViewModel() {
     fun getElections() {
         viewModelScope.launch {
             try {
-                val electionList = ElectionsApi.retrofitService.getElections()
-//                    TODO("Not yet implemented")
-//                    TODO("Decrypt data")
-                Log.d(TAG, electionList.size.toString())
-                _data.value = electionList
+                Log.d(TAG, "Loading election data")
+                val response = ElectionsApi.client.getElections()
+                Log.d(TAG,response.toString())
 
+                when (response) {
+                    is NetworkResponse.Success -> {
+                        _data.value = response.body!!
+                    }
+                    is NetworkResponse.Failure -> {
+
+                    }
+                    is NetworkResponse.NetworkError -> {
+
+                    }
+                    is NetworkResponse.UnknownError -> {
+
+                    }
+                }
             } catch (e: Exception) {
-//                    TODO("Not yet implemented")
-//                _data = empty
-                _data.value = ArrayList()
-//                throw Exception(_data.value)
+                Log.d(TAG, "Error: ${e.message.toString()}")
             }
         }
     }

@@ -1,14 +1,13 @@
 package com.kevinwei.vote.activities.ballot
 
 import android.util.Log
-import androidx.databinding.Bindable
-import androidx.databinding.Observable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kevinwei.vote.model.Candidate
 import com.kevinwei.vote.network.ElectionsApi
+import com.kevinwei.vote.network.NetworkResponse
 import kotlinx.coroutines.launch
 
 class BallotViewModel : ViewModel() {
@@ -51,9 +50,25 @@ class BallotViewModel : ViewModel() {
     fun getBallot(electionId: String) {
         viewModelScope.launch {
             try {
-                val ballot = ElectionsApi.retrofitService.getBallot(electionId)
-                Log.d(TAG, ballot.toString())
-                _candidateData.value = ballot.candidateList
+                val response = ElectionsApi.client.getBallot(electionId)
+
+                when (response) {
+                    is NetworkResponse.Success -> {
+                        _candidateData.value = response.body!!.candidateList
+                    }
+                    is NetworkResponse.Failure -> {
+
+                    }
+                    is NetworkResponse.NetworkError -> {
+
+                    }
+                    is NetworkResponse.UnknownError -> {
+
+                    }
+                }
+
+                Log.d(TAG, response.toString())
+//                _candidateData.value = ballot.candidateList
             } catch (e: Exception) {
                 TODO("Not yet implemented")
                 _candidateData.value = listOf<Candidate>()

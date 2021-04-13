@@ -12,9 +12,11 @@ class ElectionAdapter(private val clickListener: ElectionVoteListener) :
     ListAdapter<Election, ElectionAdapter.ViewHolder>(ElectionDiffCallback()) {
 
     // Bind UI
+
     class ViewHolder private constructor(val binding: CardElectionBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+        // TODO - Handle display logic and function of advanced polling
         fun bind(item: Election, clickListener: ElectionVoteListener) {
             binding.election = item
             binding.clickListener = clickListener

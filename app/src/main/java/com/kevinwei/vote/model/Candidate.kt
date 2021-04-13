@@ -9,7 +9,7 @@ data class Candidate(
     @Json(name = "candidate_name")
     val candidateName: String,
 
-    // Display logic
+    @Transient
     var selected: Boolean = false
-
 )
+
