@@ -6,21 +6,23 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kevinwei.vote.MainApplication
 import com.kevinwei.vote.R
 import com.kevinwei.vote.model.LoginRequest
 import com.kevinwei.vote.model.User
 import com.kevinwei.vote.network.ElectionsApi
 import com.kevinwei.vote.network.NetworkResponse
+import com.kevinwei.vote.security.SessionManager
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class LoginViewModel : ViewModel() {
     private val TAG = "LoginViewModel"
 
-    enum class AuthenticationState {
-        AUTHENTICATED, UNAUTHENTICATED;
-    }
+    lateinit var sessionManager: SessionManager
 
+    enum class AuthenticationState { AUTHENTICATED, UNAUTHENTICATED }
     private val _authState = MutableLiveData<AuthenticationState>()
     val authState: LiveData<AuthenticationState> = _authState
 
@@ -37,9 +39,9 @@ class LoginViewModel : ViewModel() {
     val user: LiveData<User> = _user
 
     init {
-        // TODO(UNAUTH)
-        _authState.value = AuthenticationState.AUTHENTICATED
-//        _authState.value = AuthenticationState.UNAUTHENTICATED
+//        _authState.value = AuthenticationState.AUTHENTICATED
+        _authState.value = AuthenticationState.UNAUTHENTICATED
+        sessionManager = SessionManager(MainApplication.appContext)
     }
 
     /*
@@ -92,8 +94,6 @@ class LoginViewModel : ViewModel() {
                     // TODO (" Loading screen")
                     // TODO("Pass in device information")
                     val loginRequest = LoginRequest(username, password)
-
-
                     val response = ElectionsApi.client.login(loginRequest)
                     Log.d("test", response.toString())
 
@@ -101,30 +101,27 @@ class LoginViewModel : ViewModel() {
                         is NetworkResponse.Success -> {
                             _user.value = response.body!!
                             _authState.value = AuthenticationState.AUTHENTICATED
+                            _loginResult.value = LoginResult(true)
+                            sessionManager.saveAuthToken(user.value!!.token.toString())
                         }
                         is NetworkResponse.Failure -> {
-
+                            _loginResult.value = LoginResult(false)
+                            _authState.value = AuthenticationState.UNAUTHENTICATED
                         }
                         is NetworkResponse.NetworkError -> {
+                            _loginResult.value = LoginResult(false)
+                            _authState.value = AuthenticationState.UNAUTHENTICATED
 
                         }
                         is NetworkResponse.UnknownError -> {
-
+                            _loginResult.value = LoginResult(false)
+                            _authState.value = AuthenticationState.UNAUTHENTICATED
                         }
                     }
 
-//                    Log.d(TAG, result.message.toString())
-//                    _user.value = result
-                    // TODO retrieve token from server to a transient object
-                    // TODO - Handle server response
-
-
-                    _loginResult.value = LoginResult(true)
-                    _authState.value = AuthenticationState.AUTHENTICATED
                 }
             } catch (e: Exception) {
                 Log.d(TAG, e.message.toString())
-
                 _loginResult.value = LoginResult(false)
                 _authState.value = AuthenticationState.UNAUTHENTICATED
             } finally {
