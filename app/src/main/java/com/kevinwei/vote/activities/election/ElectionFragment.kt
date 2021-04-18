@@ -36,7 +36,7 @@ class ElectionFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         _binding = FragmentElectionBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
@@ -90,12 +90,10 @@ class ElectionFragment : Fragment() {
         })
         binding.electionList.adapter = electionAdapter
 
-        electionAdapter.submitList(testList)
-        // TODO("Setup observer on retrieving list of elections
-//        val electionListObserver = Observer<List<Election>> {
-//            electionAdapter.data = it
-//        }
-//        electionViewModel.electionData.observe(this, electionListObserver)
+        //        electionAdapter.submitList(testList)
+        electionViewModel.electionData.observe(viewLifecycleOwner, Observer { it ->
+            electionAdapter.submitList(it)
+        })
     }
 
     private fun setupBallotNavigation() {
@@ -109,31 +107,4 @@ class ElectionFragment : Fragment() {
             }
         })
     }
-
-    val testList = listOf(
-        Election(
-            "1111",
-            "Election A",
-            "Description of Election A",
-            "startDate",
-            "endDate",
-            "advStartDate",
-            "advEndDate",
-            true,
-            "created",
-            "updated"
-        ),
-        Election(
-            "2222",
-            "Election B",
-            "Description of Election B",
-            "startDate",
-            "endDate",
-            "advStartDate",
-            "advEndDate",
-            false,
-            "created",
-            "updated"
-        )
-    )
 }
