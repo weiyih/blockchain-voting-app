@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,6 +19,7 @@ import com.kevinwei.vote.adapter.BallotVoteListener
 import com.kevinwei.vote.adapter.ElectionVoteListener
 import com.kevinwei.vote.databinding.FragmentBallotBinding
 import com.kevinwei.vote.model.Candidate
+import com.kevinwei.vote.security.BiometricPromptUtils
 
 class BallotFragment : Fragment() {
     private var _binding: FragmentBallotBinding? = null
@@ -53,19 +55,22 @@ class BallotFragment : Fragment() {
         val election = args.election
         binding.electionTitle.text = election?.electionName
 
-//        binding.electionDistrict.text =
-//        binding.electionDistrict.text =
-
-
         val ballotAdapter = BallotAdapter(
             ballotViewModel,
             BallotVoteListener { candidate ->
 //            ballotViewModel.onCandidateClick(candidate)
-            Toast.makeText(requireContext(), "${candidate.candidateName} ${candidate.selected.toString()}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "${candidate.candidateName} ${candidate.selected.toString()}", Toast.LENGTH_SHORT).show()
+            })
+
+        // Retrieve and load the ballot data
+        ballotViewModel.getBallot(election!!.electionId);
+        ballotViewModel.candidateData.observe(viewLifecycleOwner, Observer { candidateList ->
+//            Toast.makeText(requireContext(), "List Updated", Toast.LENGTH_SHORT).show()
+            ballotAdapter.submitList(candidateList)
         })
 
+        // Disable or enable the submission button
         ballotViewModel.selectedCandidate.observe(viewLifecycleOwner, Observer { selected ->
-
             when (selected) {
                 null -> binding.submitVote.isEnabled = false
                 else -> {
@@ -74,15 +79,7 @@ class BallotFragment : Fragment() {
                 }
             }
         })
-
         binding.candidateList.adapter = ballotAdapter
-
-
-//        ballotViewModel.getBallot(election!!.electionId)
-        ballotViewModel.candidateData.observe(viewLifecycleOwner, Observer { candidateList ->
-            Toast.makeText(requireContext(), "List Updated", Toast.LENGTH_SHORT).show()
-            ballotAdapter.submitList(candidateList)
-        })
     }
 
     private fun setupSubmitBallot() {
@@ -91,6 +88,7 @@ class BallotFragment : Fragment() {
 
         binding.submitVote.setOnClickListener { _ ->
             displayBiometricPrompt()
+            BiometricPromptUtils.voteBiometricPrompt(this.activity as AppCompatActivity)
         }
 
     }
