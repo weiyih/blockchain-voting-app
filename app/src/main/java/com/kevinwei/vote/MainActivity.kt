@@ -2,13 +2,15 @@ package com.kevinwei.vote
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
+import com.kevinwei.vote.security.SessionManager
 import com.kevinwei.vote.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+
+    lateinit var sessionManager: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +26,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        sessionManager = SessionManager(applicationContext)
+        sessionManager.removeAuthToken()
     }
 
     override fun onSupportNavigateUp(): Boolean {
