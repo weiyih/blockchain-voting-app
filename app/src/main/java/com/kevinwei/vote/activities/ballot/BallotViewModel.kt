@@ -21,32 +21,6 @@ class BallotViewModel : ViewModel() {
     private val _selectedCandidate = MutableLiveData<Candidate?>()
     val selectedCandidate: LiveData<Candidate?> = _selectedCandidate
 
-    //TODO - replace with network call
-    init {
-        _selectedCandidate.value = null
-
-        val testList = listOf(
-            Candidate(
-                "1111",
-                "Candidate Name A",
-            ),
-            Candidate(
-                "2222",
-                "Candidate B",
-            ),
-            Candidate(
-                "3333",
-                "Candidate Name 4",
-            ),
-            Candidate(
-                "4444",
-                "Candidate Five",
-            )
-        )
-        _candidateData.value = testList
-    }
-
-
     fun getBallot(electionId: String) {
         viewModelScope.launch {
             try {
@@ -68,9 +42,7 @@ class BallotViewModel : ViewModel() {
                 }
 
                 Log.d(TAG, response.toString())
-//                _candidateData.value = ballot.candidateList
             } catch (e: Exception) {
-                TODO("Not yet implemented")
                 _candidateData.value = listOf<Candidate>()
                 // throw Exception("Unable to retrieve ballot")
             }
