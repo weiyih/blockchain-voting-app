@@ -7,20 +7,21 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
 import com.kevinwei.vote.*
 import com.kevinwei.vote.R
+import com.kevinwei.vote.activities.login.LoginResult
+import com.kevinwei.vote.activities.login.LoginViewModel
 import com.kevinwei.vote.model.BiometricToken
-import com.kevinwei.vote.model.User
 import com.kevinwei.vote.network.ElectionsApi
 import com.kevinwei.vote.security.BiometricPromptUtils
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.util.*
-import kotlin.coroutines.coroutineContext
 
 
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -28,7 +29,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var biometricPrompt: BiometricPrompt
 
-    private val cryptographyManager = CryptographyManager()
+    private var cryptographyManager = CryptographyManager()
     private val ciphertextWrapper
         get() = cryptographyManager.getCiphertextWrapperFromSharedPrefs(
             requireActivity().applicationContext,
@@ -39,7 +40,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         // Load the preferences from an XML resource
-
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.context)
     }
@@ -61,7 +61,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
             getString(R.string.pref_notification) -> {
                 val value =
                     sharedPreferences.getBoolean(getString(R.string.pref_notification), false)
-                Toast.makeText(requireContext(), value.toString(), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -72,30 +71,30 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val biometricManager = BiometricManager.from(this.requireContext())
         when (biometricManager.canAuthenticate(AUTHORIZED_BIOMETRICS)) {
             BiometricManager.BIOMETRIC_SUCCESS -> {
-                registerBiometric()
+                enableBiometricPrompt()
             }
 
             // No biometric hardware
             BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE, BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
+                Log.e(TAG, "BIOMETRIC_ERROR_HW_UNAVAILABLE")
                 Toast.makeText(requireContext(),
-                    "No biometric features available on this device.",
+                    "ERROR: BIOMETRIC_ERROR_HW_UNAVAILABLEN",
                     Toast.LENGTH_SHORT).show()
             }
 
             // No biometric authentication enrolled on the device
             BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-                Log.e("MY_APP_TAG", "BIOMETRIC_ERROR_NONE_ENROLLED")
+                Log.e(TAG, "BIOMETRIC_ERROR_NONE_ENROLLED")
                 Toast.makeText(requireContext(),
                     getString(R.string.biometric_enabled_message),
                     Toast.LENGTH_SHORT).show()
-                // TODO("Remove previous cipher")
                 launchBiometricEnroll()
             }
             BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED -> {
+                Log.e(TAG, "BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED")
                 Toast.makeText(requireContext(),
-                    "Security device out of date.",
+                    "ERROR: BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED",
                     Toast.LENGTH_SHORT).show()
-                // TODO("Display error prompt")
             }
         }
     }
@@ -115,93 +114,62 @@ class SettingsFragment : PreferenceFragmentCompat() {
     /*
     * Biometric Settings
     */
-    private fun createBiometricPrompt(): BiometricPrompt {
-        val executor = requireContext().mainExecutor
-
-        val callback = object : BiometricPrompt.AuthenticationCallback() {
-            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                super.onAuthenticationError(errorCode, errString)
-                Log.d(TAG, "$errorCode :: $errString")
-                Toast.makeText(activity, "Biometric authentication failed", Toast.LENGTH_SHORT)
-                    .show()
-                updateFailedBiometricPrefs()
-            }
-
-            override fun onAuthenticationFailed() {
-                super.onAuthenticationFailed()
-                Log.d(TAG, "Authentication failed for an unknown reason")
-                Toast.makeText(activity, "Biometric authentication failed", Toast.LENGTH_SHORT)
-                    .show()
-
-                updateFailedBiometricPrefs()
-            }
-
-            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                super.onAuthenticationSucceeded(result)
-
-                Log.d(TAG, "Authentication was successful")
-                Toast.makeText(activity,
-                    getString(R.string.biometric_enabled_message),
-                    Toast.LENGTH_SHORT)
-                    .show()
-                encryptAndStoreBiometricToken(result)
-            }
-        }
-
-        return BiometricPrompt(requireActivity(), executor, callback)
-    }
-
-
-    private fun updateFailedBiometricPrefs() {
-        with(sharedPreferences.edit()) {
-            putBoolean(getString(R.string.pref_biometric), false)
-            apply()
-        }
-        val pref: SwitchPreferenceCompat = findPreference(getString(R.string.pref_biometric))!!
-        pref.isChecked = false
-    }
-
-    private fun enableBiometricPrompt(): BiometricPrompt.PromptInfo {
-        // TODO ("Bug - setConfirmationRequired not working")
-        val promptInfo = BiometricPrompt.PromptInfo.Builder().apply {
-            setTitle(getString(R.string.prompt_bio_title))
-            setSubtitle(getString(R.string.prompt_bio_subtitle_enable))
-            // TODO ("Bug - setConfirmationRequired(true) not working")
-            setConfirmationRequired(false)
-            setNegativeButtonText(getString(R.string.cancel))
-        }.build()
-        // .setDeviceCredentialAllowed(true) // Allow PIN/pattern/password authentication.
-        // setDeviceCredentialAllowed and setNegativeButtonText are exclusive options
-        return promptInfo
-    }
-
-    private fun registerBiometric() {
+    private fun enableBiometricPrompt() {
         val biometricManager = BiometricManager.from(this.requireContext())
-        val canAuthentication = biometricManager.canAuthenticate(AUTHORIZED_BIOMETRICS)
+        val canAuthenticate =
+            biometricManager.canAuthenticate(com.kevinwei.vote.AUTHORIZED_BIOMETRICS)
 
-        if (canAuthentication == BiometricManager.BIOMETRIC_SUCCESS) {
 
+        if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
+            // BiometricPrompt callback
+            val callback = object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                    super.onAuthenticationError(errorCode, errString)
+                    Toast.makeText(context,
+                        "Unable to enable biometrics: $errString", Toast.LENGTH_SHORT).show()
+                    updateFailedBiometricPrefs();
+                }
+
+                override fun onAuthenticationFailed() {
+                    super.onAuthenticationFailed()
+                    Toast.makeText(context, "Unable to authenticate biometrics", Toast.LENGTH_SHORT)
+                        .show()
+                    updateFailedBiometricPrefs();
+                }
+
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+                    encryptAndStoreBiometricToken(result)
+                }
+            }
             val secretKey = getString(R.string.secret_key)
+            cryptographyManager = CryptographyManager()
             val cipher = cryptographyManager.getInitializedCipherForEncryption(secretKey)
 
-            //NOTE: :: converts function into lambda
-            biometricPrompt = createBiometricPrompt()
-            val promptInfo = enableBiometricPrompt()
+            val biometricPrompt =
+                BiometricPromptUtils.createBiometricPrompt(requireActivity(), callback)
+            val promptInfo = BiometricPromptUtils.enableBiometricPrompt(requireActivity())
+
             biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
         }
     }
 
-    private fun encryptAndStoreBiometricToken(authenticationResult: BiometricPrompt.AuthenticationResult) {
-        authenticationResult.cryptoObject?.cipher?.apply {
-            // Generate a GUID and register it on the server
+    private fun encryptAndStoreBiometricToken(authResult: BiometricPrompt.AuthenticationResult) {
+        authResult.cryptoObject?.cipher?.apply {
+            // Generate a UUID and register it on the server
             val uniqueID: String = UUID.randomUUID().toString()
 
-            // TODO ("Handle failed network registration")
+            // TODO
             viewLifecycleOwner.lifecycleScope.launch {
-                val biometricToken = BiometricToken(uniqueID)
-                ElectionsApi.retrofitService.registerBiometricLogin(biometricToken)
+                try {
+                    val biometricToken = BiometricToken(uniqueID)
+                    ElectionsApi.client.registerBiometricLogin(biometricToken)
+                } catch (e: Exception) {
+
+                }
             }
 
+            // might be better to move to own thread
             val encryptedBiometricTokenWrapper = cryptographyManager.encryptData(uniqueID, this)
             cryptographyManager.persistCiphertextWrapperToSharedPrefs(
                 encryptedBiometricTokenWrapper,
@@ -212,4 +180,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
             )
         }
     }
+
+    private fun updateFailedBiometricPrefs() {
+        with(sharedPreferences.edit()) {
+            putBoolean(getString(R.string.pref_biometric), false)
+            apply()
+        }
+        val pref: SwitchPreferenceCompat = findPreference(getString(R.string.pref_biometric))!!
+        pref.isChecked = false
+    }
+
 }

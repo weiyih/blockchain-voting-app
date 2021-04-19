@@ -4,6 +4,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.kevinwei.vote.R
+import com.kevinwei.vote.activities.ballot.BallotFragment
 import com.kevinwei.vote.activities.login.LoginFragment
 
 /*
@@ -21,7 +22,7 @@ If application exits foreground, prmompts are dismissed for security reasons
 
 IMPORTANT!
 Persistent authentication accross configuartion changes requires (re)creation of prompt everytime
-the activity/fragment is created. Instantiate prompt with new callback early in the activity lifecycle.
+the activity/fragment is created. Instantiate prompt with callback early in the activity lifecycle.
 (e.g. in onCreate()) will ensure ongoing authentication sessions callbacks to be received by the new
 instance.
 
@@ -35,8 +36,7 @@ object BiometricPromptUtils {
     // Create Biometric Prompt that returns a callback
     fun createBiometricPrompt(
         activity: FragmentActivity,
-        callback: BiometricPrompt.AuthenticationCallback,
-        processSuccess: (BiometricPrompt.AuthenticationResult) -> Unit
+        callback: BiometricPrompt.AuthenticationCallback
     ): BiometricPrompt {
         // Return an Executor that will run enqueued tasks on the main thread associated with this context.
         val executor = ContextCompat.getMainExecutor(activity)
@@ -66,7 +66,7 @@ object BiometricPromptUtils {
     * Biometric Prompt displays for enabling, login, and voting
     * NOTE: setConfirmationRequired only displays with face unlock. Fingerprint is considered confirmation
     */
-    fun enableBiometricPrompt(activity: LoginFragment): BiometricPrompt.PromptInfo =
+    fun enableBiometricPrompt(activity: FragmentActivity): BiometricPrompt.PromptInfo =
         BiometricPrompt.PromptInfo.Builder().apply {
             setTitle(activity.getString(R.string.prompt_bio_title))
             setSubtitle(activity.getString(R.string.prompt_bio_subtitle_enable))

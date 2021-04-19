@@ -3,6 +3,7 @@ package com.kevinwei.vote
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import androidx.preference.PreferenceManager
 import java.nio.charset.Charset
 import java.security.KeyStore
 import javax.crypto.Cipher
@@ -133,7 +134,8 @@ private class CryptographyManagerImpl : CryptographyManager {
         prefKey: String
     ) {
         val json = Gson().toJson(ciphertextWrapper)
-        context.getSharedPreferences(filename, mode).edit().putString(prefKey, json).apply()
+        val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)
+        sharedPrefs.edit().putString(prefKey, json).apply()
     }
 
     override fun getCiphertextWrapperFromSharedPrefs(
@@ -142,7 +144,8 @@ private class CryptographyManagerImpl : CryptographyManager {
         mode: Int,
         prefKey: String
     ): CiphertextWrapper? {
-        val json = context.getSharedPreferences(filename, mode).getString(prefKey, null)
+        val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val json = sharedPrefs.getString(prefKey, null)
         return Gson().fromJson(json, CiphertextWrapper::class.java)
     }
 }
