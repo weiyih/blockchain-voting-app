@@ -30,10 +30,7 @@ class ElectionViewModel : ViewModel() {
     fun getElections() {
         viewModelScope.launch {
             try {
-                Log.d(TAG, "Loading election data")
                 val response = ElectionsApi.client.getElections()
-                Log.d(TAG,response.toString())
-
                 when (response) {
                     is NetworkResponse.Success -> {
                         _data.value = response.body!!

@@ -89,16 +89,14 @@ class LoginViewModel : ViewModel() {
                 // LoginFormState should always be SuccessLoginFormState
                 if (loginFormState.value is SuccessLoginFormState) {
 
-
-
                     // TODO (" Loading screen")
                     // TODO("Pass in device information")
                     val loginRequest = LoginRequest(username, password)
                     val response = ElectionsApi.client.login(loginRequest)
-                    Log.d("test", response.toString())
 
                     when (response) {
                         is NetworkResponse.Success -> {
+                            Log.d(TAG, response.body.toString())
                             _user.value = response.body!!
                             _authState.value = AuthenticationState.AUTHENTICATED
                             _loginResult.value = LoginResult(true)
@@ -118,7 +116,6 @@ class LoginViewModel : ViewModel() {
                             _authState.value = AuthenticationState.UNAUTHENTICATED
                         }
                     }
-
                 }
             } catch (e: Exception) {
                 Log.d(TAG, e.message.toString())
@@ -138,8 +135,7 @@ class LoginViewModel : ViewModel() {
                 Log.d(TAG, "Logging in")
                 val loginRequest = LoginRequest(username, biometricPassword)
                 val result = ElectionsApi.client.login(loginRequest)
-//                Log.d(TAG, ""${result.message}")
-//                _user.value = result
+//                _user.value = result.body!!
                 _authState.value = AuthenticationState.AUTHENTICATED
                 _loginResult.value = LoginResult(true)
             } catch (e: Exception) {

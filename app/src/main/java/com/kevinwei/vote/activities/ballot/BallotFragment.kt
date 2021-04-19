@@ -6,19 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
+import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.navArgs
-import com.kevinwei.vote.R
 import com.kevinwei.vote.adapter.BallotAdapter
 import com.kevinwei.vote.adapter.BallotVoteListener
-import com.kevinwei.vote.adapter.ElectionVoteListener
 import com.kevinwei.vote.databinding.FragmentBallotBinding
-import com.kevinwei.vote.model.Candidate
 import com.kevinwei.vote.security.BiometricPromptUtils
 
 class BallotFragment : Fragment() {
@@ -32,7 +28,7 @@ class BallotFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
 //        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_ballot, container, false)
         _binding = FragmentBallotBinding.inflate(inflater, container, false)
@@ -59,7 +55,9 @@ class BallotFragment : Fragment() {
             ballotViewModel,
             BallotVoteListener { candidate ->
 //            ballotViewModel.onCandidateClick(candidate)
-                Toast.makeText(requireContext(), "${candidate.candidateName} ${candidate.selected.toString()}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(),
+                    "${candidate.candidateName} ${candidate.selected.toString()}",
+                    Toast.LENGTH_SHORT).show()
             })
 
         // Retrieve and load the ballot data
@@ -94,6 +92,36 @@ class BallotFragment : Fragment() {
     }
 
     private fun displayBiometricPrompt() {
-        Toast.makeText(requireContext(), "BIO PROMPT", Toast.LENGTH_SHORT).show()
+
+        // BiometricPrompt callback
+        val callback = object : BiometricPrompt.AuthenticationCallback() {
+            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                super.onAuthenticationError(errorCode, errString)
+                Toast.makeText(context,
+                    "User Cancelled: $errorCode", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onAuthenticationFailed() {
+                super.onAuthenticationFailed()
+                Toast.makeText(context, "Authentication Failed", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                super.onAuthenticationSucceeded(result)
+                submitBallot(result)
+                // TODO - Enable loading screen
+            }
+        }
+
+        val biometricPrompt = BiometricPromptUtils.createBiometricPrompt(requireActivity(), callback)
+
+        val promptInfo = BiometricPromptUtils.enableBiometricPrompt(requireActivity())
+        biometricPrompt.authenticate(promptInfo)
+    }
+
+    private fun submitBallot(authResult: BiometricPrompt.AuthenticationResult) {
+        ballotViewModel.submitBallot()
+
+
     }
 }
