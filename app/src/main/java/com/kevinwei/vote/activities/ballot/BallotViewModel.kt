@@ -7,28 +7,33 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kevinwei.vote.MainApplication
-import com.kevinwei.vote.activities.login.LoginResult
-import com.kevinwei.vote.model.BallotVote
+import com.kevinwei.vote.activities.login.LoginViewModel
+import com.kevinwei.vote.model.BallotRequest
 import com.kevinwei.vote.model.Candidate
-import com.kevinwei.vote.network.ElectionsApi
-import com.kevinwei.vote.network.NetworkResponse
+import com.kevinwei.vote.model.LoginRequest
+import com.kevinwei.vote.network.*
+import com.kevinwei.vote.security.SessionManager
 import kotlinx.coroutines.launch
 
 class BallotViewModel : ViewModel() {
     private val TAG = "BallotViewModel"
+    private val sessionManager: SessionManager = SessionManager(MainApplication.appContext)
 
     // Candidate list data
     private val _candidateData = MutableLiveData<List<Candidate>>()
     val candidateData: LiveData<List<Candidate>> = _candidateData
 
-    // Selected candidate
+    // LoadBallot API Results
+    private val _apiLoadResult = MutableLiveData<ApiResult>()
+    val apiLoadResult: LiveData<ApiResult> = _apiLoadResult
+
+    // SubmitBallot API Results
+    private val _apiSubmitResult = MutableLiveData<ApiResult>()
+    val apiSubmitResult: LiveData<ApiResult> = _apiSubmitResult
+
+    // Ballot Transaction details
     private val _selectedCandidate = MutableLiveData<Candidate?>()
     val selectedCandidate: LiveData<Candidate?> = _selectedCandidate
-
-    // Login Results
-    private val _submitResult = MutableLiveData<SubmitResult>()
-    val submitResult: LiveData<SubmitResult> = _submitResult
-
     private var _electionId: String = ""
     private var _districtId: Int = 0
 
@@ -39,27 +44,33 @@ class BallotViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val response = ElectionsApi.client.getBallot(electionId)
-
-                when (response) {
-                    is NetworkResponse.Success -> {
-                        _districtId = response.body!!.districtId
-                        _candidateData.value = response.body!!.candidateList
+                when (val response = ElectionsApi.client.getBallot(electionId)) {
+                    is Result.Unauthenticated -> {
+                        _apiLoadResult.value = FailedResult(unauthenticated = true)
+                        sessionManager.removeAuthToken()
                     }
-                    is NetworkResponse.Failure -> {
-
+                    is Result.Success -> {
+                        when (response.body!!.success) {
+                            "error" -> {
+                                // Unable to retrieve ballot
+                                _apiSubmitResult.value = FailedResult(response.body!!.data.error)
+                            }
+                            "success" -> {
+                                _candidateData.value = response.body!!.data.candidateList
+                                _apiLoadResult.value = SuccessResult(true)
+                            }
+                        }
                     }
-                    is NetworkResponse.NetworkError -> {
-                        Toast.makeText(MainApplication.appContext,
-                            "Network Error - Unable to retrieve ballot",
-                            Toast.LENGTH_SHORT).show();
-
+                    is Result.Error -> {
+                        //Something went wrong
+                        _apiLoadResult.value = FailedResult("Something went wrong. Try again later")
                     }
-                    is NetworkResponse.UnknownError -> {
-
+                    is Result.NetworkError -> {
+                        _apiLoadResult.value = FailedResult("Network error. Try again later")
                     }
                 }
             } catch (e: Exception) {
+                _apiLoadResult.value = FailedResult(e.message.toString())
                 _candidateData.value = listOf<Candidate>()
                 // throw Exception("Unable to retrieve ballot")
             }
@@ -71,42 +82,33 @@ class BallotViewModel : ViewModel() {
             try {
                 val candidate = selectedCandidate.value!!
 
-                val ballotVote = BallotVote(
+                val ballotVote = BallotRequest(
                     _electionId,
                     _districtId,
                     candidate.candidateId,
                 )
-
-                val response = ElectionsApi.client.submit(_electionId, ballotVote)
-
-                Log.d(TAG, response.toString())
-
-                when (response) {
-                    is NetworkResponse.Success -> {
-                        _submitResult.value = SubmitResult(true)
-                        // TODO (Set success)
-                        Toast.makeText(MainApplication.appContext,
-                            "Succcess - Submitted ballot",
-                            Toast.LENGTH_SHORT).show();
+                when (val response = ElectionsApi.client.submit(_electionId, ballotVote)) {
+                    is Result.Unauthenticated -> {
+                        _apiSubmitResult.value = FailedResult(unauthenticated = true)
+                        sessionManager.removeAuthToken()
                     }
-                    is NetworkResponse.Failure -> {
-                        _submitResult.value = SubmitResult(false)
-                        Toast.makeText(MainApplication.appContext,
-                            "Error - Unable to submit ballot",
-                            Toast.LENGTH_SHORT).show();
+                    is Result.Success -> {
+                        when (response.body!!.success) {
+                            "error" -> {
+                                // Unable to retrieve ballot
+                                _apiSubmitResult.value = FailedResult(response.body!!.data.message)
+                            }
+                            "success" -> {
+                                _apiSubmitResult.value = SuccessResult(true)
+                            }
+                        }
                     }
-                    is NetworkResponse.NetworkError -> {
-                        _submitResult.value = SubmitResult(false)
-                        Toast.makeText(MainApplication.appContext,
-                            "Network Error - Unable to submit ballot",
-                            Toast.LENGTH_SHORT).show();
-
+                    is Result.Error -> {
+                        //Something went wrong
+                        _apiSubmitResult.value = FailedResult("Unable to submit ballot")
                     }
-                    is NetworkResponse.UnknownError -> {
-                        _submitResult.value = SubmitResult(false)
-                        Toast.makeText(MainApplication.appContext,
-                            "Unknown Error - Unable to submit ballot",
-                            Toast.LENGTH_SHORT).show();
+                    is Result.NetworkError -> {
+                        _apiSubmitResult.value = FailedResult("Network error: Unable to submit ballot. ")
                     }
                 }
             } catch (e: Exception) {

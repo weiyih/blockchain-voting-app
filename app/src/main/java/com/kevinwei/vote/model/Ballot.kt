@@ -15,5 +15,8 @@ data class Ballot(
     val districtName: String,
 
     @Json(name = "candidate_list")
-    val candidateList: List<Candidate>
+    val candidateList: List<Candidate>,
+
+    @Json( name= "error")
+    var error: String? = null
 )

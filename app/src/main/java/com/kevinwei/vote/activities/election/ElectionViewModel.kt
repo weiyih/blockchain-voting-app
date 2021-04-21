@@ -5,23 +5,26 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kevinwei.vote.MainApplication
+import com.kevinwei.vote.activities.login.LoginViewModel
 import com.kevinwei.vote.model.Election
-import com.kevinwei.vote.network.ElectionsApi
-import com.kevinwei.vote.network.NetworkResponse
+import com.kevinwei.vote.network.*
+
+import com.kevinwei.vote.security.SessionManager
 import kotlinx.coroutines.launch
 
 import java.lang.Exception
 
 class ElectionViewModel : ViewModel() {
     private val TAG = "ElectionViewModel"
+    private val sessionManager: SessionManager = SessionManager(MainApplication.appContext)
 
-//    private val _status = MutableLiveData<ElectionApiStatus>
-//    val status: LiveData<ElectionApiStatus>
+    // ElectionAPI Results
+    private val _apiResult = MutableLiveData<ApiResult>()
+    val apiResult: LiveData<ApiResult> = _apiResult
 
     private val _data = MutableLiveData<List<Election>>()
-
-    val electionData: LiveData<List<Election>>
-        get() = _data
+    val electionData: LiveData<List<Election>> = _data
 
     init {
         getElections()
@@ -30,23 +33,37 @@ class ElectionViewModel : ViewModel() {
     fun getElections() {
         viewModelScope.launch {
             try {
-                val response = ElectionsApi.client.getElections()
-                when (response) {
-                    is NetworkResponse.Success -> {
-                        _data.value = response.body!!
+                when (val response = ElectionsApi.client.getElections()) {
+                    is Result.Unauthenticated -> {
+                        _apiResult.value = FailedResult(unauthenticated = true)
+                        sessionManager.removeAuthToken()
                     }
-                    is NetworkResponse.Failure -> {
+                    is Result.Success -> {
+                        when (response.body!!.success) {
+                            "error" -> {
+                                // Unable to retrieve elections
+                                _apiResult.value = FailedResult(response.body.error!!.message.toString())
+                            }
+                            "success" -> {
+                                _apiResult.value = SuccessResult(true)
+                                _data.value = response.body.data!!
 
+                            }
+                        }
                     }
-                    is NetworkResponse.NetworkError -> {
-
+                    is Result.Error -> {
+                        _apiResult.value = FailedResult("Something went wrong. Try again later")
                     }
-                    is NetworkResponse.UnknownError -> {
-
+                    is Result.NetworkError -> {
+                        _apiResult.value = FailedResult("Network error. Try again later")
                     }
                 }
+
+
             } catch (e: Exception) {
-                Log.d(TAG, "Error: ${e.message.toString()}")
+                _apiResult.value = FailedResult(e.message.toString())
+            } finally {
+                // TODO (" Loading screen disabled")
             }
         }
     }

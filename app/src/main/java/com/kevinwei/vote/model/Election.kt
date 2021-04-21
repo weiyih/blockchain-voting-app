@@ -26,35 +26,17 @@ data class Election(
     val advancedPolling: Boolean,
 
     @Json(name = "advanced_start_date")
-    var advancedStartDate: String? = "",
+    var advancedStartDate: String? = null,
 
     @Json(name = "advanced_end_date")
-    var advancedEndDate: String? = "",
+    var advancedEndDate: String? = null,
 
     @Json(name = "created_at")
     val createdAt: String,
 
     @Json(name = "updated_at")
     val updatedAt: String,
+
+    @Json(name = "vote_status")
+    val voteStatus: Int,
 ) : Parcelable
-
-
-//annotation class AdvancedPoll
-//
-//class AdvancedPollAdapter {
-//    @ToJson
-//    fun toJson(@AdvancedPoll advPoll: Int): Boolean {
-//        when (advPoll) {
-//            1 -> return true
-//            0 -> return false
-//    }
-//
-//    @FromJson
-//    fun fromJson(advPoll: Boolean): Int {
-//        return when (advPoll) {
-//            true -> 1
-//            false -> 0
-//        }
-//    }
-//
-//}

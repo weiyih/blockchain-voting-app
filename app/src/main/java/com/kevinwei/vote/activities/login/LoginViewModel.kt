@@ -8,20 +8,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kevinwei.vote.MainApplication
 import com.kevinwei.vote.R
-import com.kevinwei.vote.model.BiometricRequest
 import com.kevinwei.vote.model.LoginRequest
 import com.kevinwei.vote.model.User
-import com.kevinwei.vote.network.ElectionsApi
-import com.kevinwei.vote.network.NetworkResponse
+import com.kevinwei.vote.network.*
 import com.kevinwei.vote.security.SessionManager
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class LoginViewModel : ViewModel() {
     private val TAG = "LoginViewModel"
 
-    lateinit var sessionManager: SessionManager
+    var sessionManager: SessionManager
 
     enum class AuthenticationState { AUTHENTICATED, UNAUTHENTICATED }
 
@@ -33,8 +30,8 @@ class LoginViewModel : ViewModel() {
     val loginFormState: LiveData<LoginFormState> = _loginForm
 
     // Login Results
-    private val _loginResult = MutableLiveData<LoginResult>()
-    val loginResult: LiveData<LoginResult> = _loginResult
+    private val _apiResult = MutableLiveData<ApiResult>()
+    val apiResult: LiveData<ApiResult> = _apiResult
 
     // User
     private val _user = MutableLiveData<User>()
@@ -91,44 +88,41 @@ class LoginViewModel : ViewModel() {
                 // TODO (" Loading screen")
                 // TODO("Pass in device information")
                 val loginRequest = LoginRequest(username, password)
-                val response = ElectionsApi.client.login(loginRequest)
-                when (response) {
-                    is NetworkResponse.Success -> {
-                        Log.d(TAG, response.body.toString())
-                        _user.value = response.body!!
-                        _authState.value = AuthenticationState.AUTHENTICATED
-                        _loginResult.value = LoginResult(true)
-                        sessionManager.saveAuthToken(user.value!!.token.toString())
-                    }
-                    is NetworkResponse.Failure -> {
-                        _loginResult.value = LoginResult(false)
-                        _authState.value = AuthenticationState.UNAUTHENTICATED
-                    }
-                    is NetworkResponse.NetworkError -> {
-                        _loginResult.value = LoginResult(false)
-                        _authState.value = AuthenticationState.UNAUTHENTICATED
 
+                when (val response = ElectionsApi.client.login(loginRequest)) {
+                    is Result.Success -> {
+                        when (response.body!!.success) {
+                            "error" -> {
+                                //Missing or Invalid username/password
+                                _apiResult.value = FailedResult(response.body!!.data.error)
+                                _authState.value = AuthenticationState.UNAUTHENTICATED
+                            }
+                            "success" -> {
+                                _user.value = response.body!!.data
+                                _authState.value = AuthenticationState.AUTHENTICATED
+                                _apiResult.value = SuccessResult(true)
+                                sessionManager.saveAuthToken(user.value!!.token.toString())
+                            }
+                        }
                     }
-                    is NetworkResponse.UnknownError -> {
-                        _loginResult.value = LoginResult(false)
+                    is Result.Error -> {
+                        //Something went wrong
+                        _apiResult.value = FailedResult("Something went wrong. Try again later")
                         _authState.value = AuthenticationState.UNAUTHENTICATED
                     }
-
+                    is Result.NetworkError -> {
+                        _apiResult.value = FailedResult("Network error. Try again later")
+                        _authState.value = AuthenticationState.UNAUTHENTICATED
+                    }
                 }
             } catch (e: Exception) {
                 Log.d(TAG, e.message.toString())
-                _loginResult.value = LoginResult(false)
+                _apiResult.value = FailedResult(e.message.toString())
                 _authState.value = AuthenticationState.UNAUTHENTICATED
             } finally {
                 // TODO (" Loading screen disabled")
             }
         }
-    }
-
-    // TODO ("remove")
-    fun testLogin() {
-        _authState.value = AuthenticationState.AUTHENTICATED
-        _loginResult.value = LoginResult(true)
     }
 }
 

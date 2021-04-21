@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class BallotVote (
+data class BallotRequest (
     @Json(name = "election_id")
     val electionId: String,
 

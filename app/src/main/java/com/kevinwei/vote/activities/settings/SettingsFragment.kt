@@ -9,21 +9,11 @@ import android.util.Log
 import android.widget.Toast
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
 import com.kevinwei.vote.*
 import com.kevinwei.vote.R
-import com.kevinwei.vote.activities.election.ElectionViewModel
-import com.kevinwei.vote.activities.login.LoginResult
-import com.kevinwei.vote.activities.login.LoginViewModel
-import com.kevinwei.vote.model.BiometricToken
-import com.kevinwei.vote.network.ElectionsApi
 import com.kevinwei.vote.security.BiometricPromptUtils
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import java.lang.Exception
 import java.util.*
 
 
