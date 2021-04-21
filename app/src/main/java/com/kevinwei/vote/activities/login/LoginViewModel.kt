@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kevinwei.vote.MainApplication
 import com.kevinwei.vote.R
+import com.kevinwei.vote.model.BiometricRequest
 import com.kevinwei.vote.model.LoginRequest
 import com.kevinwei.vote.model.User
 import com.kevinwei.vote.network.ElectionsApi
@@ -23,6 +24,7 @@ class LoginViewModel : ViewModel() {
     lateinit var sessionManager: SessionManager
 
     enum class AuthenticationState { AUTHENTICATED, UNAUTHENTICATED }
+
     private val _authState = MutableLiveData<AuthenticationState>()
     val authState: LiveData<AuthenticationState> = _authState
 
@@ -39,7 +41,6 @@ class LoginViewModel : ViewModel() {
     val user: LiveData<User> = _user
 
     init {
-//        _authState.value = AuthenticationState.AUTHENTICATED
         _authState.value = AuthenticationState.UNAUTHENTICATED
         sessionManager = SessionManager(MainApplication.appContext)
     }
@@ -83,39 +84,36 @@ class LoginViewModel : ViewModel() {
     /*
     * Login with username and passwword
     */
-    fun loginWithPassword(username: String, password: String) {
+    fun login(username: String, password: String) {
         viewModelScope.launch {
             try {
-                // LoginFormState should always be SuccessLoginFormState
-                if (loginFormState.value is SuccessLoginFormState) {
-
-                    // TODO (" Loading screen")
-                    // TODO("Pass in device information")
-                    val loginRequest = LoginRequest(username, password)
-                    val response = ElectionsApi.client.login(loginRequest)
-
-                    when (response) {
-                        is NetworkResponse.Success -> {
-                            Log.d(TAG, response.body.toString())
-                            _user.value = response.body!!
-                            _authState.value = AuthenticationState.AUTHENTICATED
-                            _loginResult.value = LoginResult(true)
-                            sessionManager.saveAuthToken(user.value!!.token.toString())
-                        }
-                        is NetworkResponse.Failure -> {
-                            _loginResult.value = LoginResult(false)
-                            _authState.value = AuthenticationState.UNAUTHENTICATED
-                        }
-                        is NetworkResponse.NetworkError -> {
-                            _loginResult.value = LoginResult(false)
-                            _authState.value = AuthenticationState.UNAUTHENTICATED
-
-                        }
-                        is NetworkResponse.UnknownError -> {
-                            _loginResult.value = LoginResult(false)
-                            _authState.value = AuthenticationState.UNAUTHENTICATED
-                        }
+                Log.d(TAG, "Loggin In")
+                // TODO (" Loading screen")
+                // TODO("Pass in device information")
+                val loginRequest = LoginRequest(username, password)
+                val response = ElectionsApi.client.login(loginRequest)
+                when (response) {
+                    is NetworkResponse.Success -> {
+                        Log.d(TAG, response.body.toString())
+                        _user.value = response.body!!
+                        _authState.value = AuthenticationState.AUTHENTICATED
+                        _loginResult.value = LoginResult(true)
+                        sessionManager.saveAuthToken(user.value!!.token.toString())
                     }
+                    is NetworkResponse.Failure -> {
+                        _loginResult.value = LoginResult(false)
+                        _authState.value = AuthenticationState.UNAUTHENTICATED
+                    }
+                    is NetworkResponse.NetworkError -> {
+                        _loginResult.value = LoginResult(false)
+                        _authState.value = AuthenticationState.UNAUTHENTICATED
+
+                    }
+                    is NetworkResponse.UnknownError -> {
+                        _loginResult.value = LoginResult(false)
+                        _authState.value = AuthenticationState.UNAUTHENTICATED
+                    }
+
                 }
             } catch (e: Exception) {
                 Log.d(TAG, e.message.toString())
@@ -123,25 +121,6 @@ class LoginViewModel : ViewModel() {
                 _authState.value = AuthenticationState.UNAUTHENTICATED
             } finally {
                 // TODO (" Loading screen disabled")
-            }
-        }
-    }
-
-
-    // TODO("get generated password_token used with biometric login")
-    fun loginWithBiometric(username: String, biometricPassword: String) {
-        viewModelScope.launch {
-            try {
-                Log.d(TAG, "Logging in")
-                val loginRequest = LoginRequest(username, biometricPassword)
-                val result = ElectionsApi.client.login(loginRequest)
-//                _user.value = result.body!!
-                _authState.value = AuthenticationState.AUTHENTICATED
-                _loginResult.value = LoginResult(true)
-            } catch (e: Exception) {
-                Log.d(TAG, e.toString())
-                _authState.value = AuthenticationState.UNAUTHENTICATED
-                _loginResult.value = LoginResult(false)
             }
         }
     }

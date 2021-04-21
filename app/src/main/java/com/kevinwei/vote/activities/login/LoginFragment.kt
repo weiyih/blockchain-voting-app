@@ -42,7 +42,7 @@ class LoginFragment : Fragment() {
     private val ciphertextWrapper
         get() = cryptographyManager.getCiphertextWrapperFromSharedPrefs(
             requireActivity().applicationContext,
-            SHARED_PREFS_FILENAME,
+            SHARED_PREF_FILENAME,
             Context.MODE_PRIVATE,
             CIPHERTEXT_WRAPPER
         )
@@ -84,7 +84,7 @@ class LoginFragment : Fragment() {
         // TODO - replace with ""
         val usernameKey = getString(R.string.pref_usertoken)
         username = sharedPrefs.getString(usernameKey, "weiyih@sheridancollege.ca").toString()
-        binding.username.editText?.setText(username)
+        binding.username.editText!!.setText(username)
     }
 
     // Checks and updates login button if biometrics have been successfully enabled
@@ -171,21 +171,22 @@ class LoginFragment : Fragment() {
 
         // IME_ACTION_DONE action key performs a "done" operation,
         // meaning there is nothing more to input and the IME will be closed.
-        binding.password.editText?.setOnEditorActionListener { _, actionId, _ ->
-            when (actionId) {
-                EditorInfo.IME_ACTION_DONE ->
-                    loginWithPassword()
-            }
-            false
-        }
+//        binding.password.editText?.setOnEditorActionListener { _, actionId, _ ->
+//            when (actionId) {
+//                EditorInfo.IME_ACTION_DONE ->
+//
+////                    loginWithPassword(username, password)
+//            }
+//            false
+//        }
 
         binding.btnLogin.setOnClickListener {
+            val username = binding.username.editText!!.text.toString()
+            val password = binding.password.editText!!.text.toString()
             if (biometricEnabled && biometricLogin) {
-                Toast.makeText(requireActivity(), "BIOMETRIC PROMPT", Toast.LENGTH_SHORT).show();
-                showBiometricLoginPrompt()
-
+                showBiometricLoginPrompt(username)
             } else {
-                loginWithPassword()
+                loginWithPassword(username, password)
             }
         }
 
@@ -200,13 +201,11 @@ class LoginFragment : Fragment() {
 //        navController.popBackStack(R.id.loginFragment, true)
     }
 
-    private fun showBiometricLoginPrompt() {
-        Log.d(TAG, "ShowBiometricLoginPrompt");
+    private fun showBiometricLoginPrompt(username: String) {
         ciphertextWrapper?.let { textWrapper ->
             val biometricManager = BiometricManager.from(this.requireContext())
             val canAuthenticate =
                 biometricManager.canAuthenticate(com.kevinwei.vote.AUTHORIZED_BIOMETRICS)
-
 
             if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
                 val secretKey = getString(R.string.secret_key)
@@ -228,12 +227,13 @@ class LoginFragment : Fragment() {
 
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
-                        loginWithBiometric(result)
+                        loginWithBiometric(result, username)
                         // TODO - Enable login loading screen
                     }
                 }
 
-                val biometricPrompt = BiometricPromptUtils.createBiometricPrompt(requireActivity(), callback)
+                val biometricPrompt =
+                    BiometricPromptUtils.createBiometricPrompt(requireActivity(), callback)
                 val promptInfo = BiometricPromptUtils.loginBiometricPrompt(requireActivity())
 
                 biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
@@ -241,23 +241,17 @@ class LoginFragment : Fragment() {
         }
     }
 
-    fun loginWithBiometric(authResult: BiometricPrompt.AuthenticationResult) {
-        Log.d(TAG, "Prompt Success");
+    fun loginWithBiometric(authResult: BiometricPrompt.AuthenticationResult, username: String) {
         // Decrypt biometric login token
         ciphertextWrapper?.let { textWrapper ->
             authResult.cryptoObject?.cipher?.let {
-                Log.d(TAG, "Decrypt");
-                val username = binding.username.editText!!.text.toString()
                 val biometricToken = cryptographyManager.decryptData(textWrapper.ciphertext, it)
-//                loginViewModel.loginWithBiometric(username, biometricToken)
-                loginViewModel.testLogin()
+                loginViewModel.login(username, biometricToken)
             }
         }
     }
 
-    fun loginWithPassword() {
-        val username = binding.username.editText!!.text.toString()
-        val password = binding.password.editText!!.text.toString()
-//        loginViewModel.loginWithPassword(username, password)
+    fun loginWithPassword(username: String, password: String) {
+        loginViewModel.login(username, password)
     }
 }
