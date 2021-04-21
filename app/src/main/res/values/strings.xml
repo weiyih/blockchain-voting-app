@@ -1,21 +1,29 @@
 <resources>
-    <string name="app_name">eVoting</string>
-    <string name="btn_login">login</string>
+    <string name="app_name">Oakville Votes</string>
+
+    <!-- LoginFragment -->
+    <string name="btn_login">login with password</string>
+    <string name="btn_login_biometric">login with biometric</string>
     <string name="txt_email">Email</string>
     <string name="txt_password">Password</string>
     <string name="btn_register">Register to vote online</string>
     <string name="powered_by" translatable="false">powered by eVotes</string>
     <string name="oakville_votes" translatable="false">oakville votes</string>
+    <string name="invalid_username">Invalid email address</string>
+    <string name="invalid_password">Password length too short</string>
+
+    <!--Biometric Prompt -->
+    <string name="secret_key" translatable="false">todo_generate_secret_key</string>
     <string name="prompt_bio_title">Biometric Authentication</string>
     <string name="prompt_bio_subtitle_vote">Oakville Votes requires your biometrics to submit your ballot</string>
     <string name="prompt_bio_subtitle_enable">Oakville Votes requires your biometrics to use access elections</string>
     <string name="prompt_bio_description">Oakville Votes is using Android biometric authentication</string>
     <string name="prompt_bio_subtitle_login">Oakville Votes requires your biometrics to login</string>
     <string name="prompt_bio_use_password">Use password</string>
+    <string name="biometric_enabled_message">Biometric sign in has been enabled</string>
+    <string name="cancel">Cancel</string>
 
-    <!-- User Forms -->
-    <string name="invalid_username">Invalid email address</string>
-    <string name="invalid_password">Password length too short</string>
+    <!-- ElectionFragment -->
     <string name="main_title">Town of Oakville Elections</string>
     <string name="content_description_election">Town of Oakville Election</string>
     <string name="city_title">Town of Oakville</string>
@@ -25,12 +33,12 @@
     <string name="content_description_ballot">Ballot</string>
     <string name="submit">submit vote</string>
     <string name="content_description_submit_vote">submit vote</string>
-    <string name="setting">Settings</string>
-    <string name="content_description_setting">Settings</string>
     <string name="election">Election</string>
     <string name="vote_in">vote</string>
 
-    <!-- Sync Preferences -->
+    <!-- SettingsFragment -->
+    <string name="setting">Settings</string>
+    <string name="content_description_setting">Settings</string>
     <string name="sync_title">Sync email periodically</string>
     <string name="enable_biometrics">Enable hardware biometric</string>
     <string name="security_header">Security</string>
@@ -39,18 +47,12 @@
     <string name="notification_reminders">Notifications of upcoming elections</string>
     <string name="language">Language</string>
     <string name="biometrics_summary">Use biometrics to authenticate user</string>
-    <string name="btn_login_biometric">login with biometric</string>
+
     <!-- Shared Preference strings -->
     <string name="preference_file_key" translatable="false">shared_prefs</string>
     <string name="pref_biometric" translatable="false">biometric</string>
     <string name="pref_username" translatable="false">username</string>
     <string name="pref_notification" translatable="false">notification</string>
     <string name="pref_usertoken" translatable="false">usertoken</string>
-
-    <string name="biometric_enabled_message">Biometric sign in has been enabled</string>
-    <string name="secret_key" translatable="false">todo_generate_secret_key</string>
-    <string name="cancel">cancel</string>
-
-
-
+    <string name="pref_remember" translatable="false">remember</string>
 </resources>

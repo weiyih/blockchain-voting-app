@@ -12,5 +12,8 @@ data class LoginResponse(
     val success: String,
 
     @Json(name="data")
-    val data: User,
+    val data: User?,
+
+    @Json(name ="error")
+    val error: ErrorResponse?,
 )

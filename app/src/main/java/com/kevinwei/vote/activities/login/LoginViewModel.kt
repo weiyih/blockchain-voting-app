@@ -88,17 +88,20 @@ class LoginViewModel : ViewModel() {
                 // TODO (" Loading screen")
                 // TODO("Pass in device information")
                 val loginRequest = LoginRequest(username, password)
-
-                when (val response = ElectionsApi.client.login(loginRequest)) {
+                val response = ElectionsApi.client.login(loginRequest)
+                Log.d(TAG, response.toString())
+                when (response) {
                     is Result.Success -> {
                         when (response.body!!.success) {
                             "error" -> {
+                                Log.d(TAG, "API Success Error")
                                 //Missing or Invalid username/password
-                                _apiResult.value = FailedResult(response.body!!.data.error)
+                                _apiResult.value = FailedResult(response.body!!.error!!.message)
                                 _authState.value = AuthenticationState.UNAUTHENTICATED
                             }
                             "success" -> {
-                                _user.value = response.body!!.data
+                                Log.d(TAG, "API Success")
+                                _user.value = response.body.data!!
                                 _authState.value = AuthenticationState.AUTHENTICATED
                                 _apiResult.value = SuccessResult(true)
                                 sessionManager.saveAuthToken(user.value!!.token.toString())
@@ -106,11 +109,13 @@ class LoginViewModel : ViewModel() {
                         }
                     }
                     is Result.Error -> {
+                        Log.d(TAG, "API Error")
                         //Something went wrong
                         _apiResult.value = FailedResult("Something went wrong. Try again later")
                         _authState.value = AuthenticationState.UNAUTHENTICATED
                     }
                     is Result.NetworkError -> {
+                        Log.d(TAG, "Network Error")
                         _apiResult.value = FailedResult("Network error. Try again later")
                         _authState.value = AuthenticationState.UNAUTHENTICATED
                     }
