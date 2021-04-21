@@ -1,6 +1,5 @@
 package com.kevinwei.vote.network
 
-import android.content.Context
 import com.kevinwei.vote.BASE_URL
 import com.kevinwei.vote.model.*
 import com.squareup.moshi.Moshi
@@ -12,19 +11,22 @@ import retrofit2.http.*
 
 interface ElectionsApiService {
     @POST("v1/login")
-//    suspend fun login(@Body loginRequest: LoginRequest): User
     suspend fun login(@Body loginRequest: LoginRequest): NetworkResponse<User, ErrorResponse>
 
+    @POST( "v1/register")
+    suspend fun register(@Body biometricRequest: BiometricRequest): NetworkResponse<Boolean, ErrorResponse>
+
     @POST("v1/election")
-//    suspend fun getElections(): List<Election>
     suspend fun getElections(): NetworkResponse<List<Election>, ErrorResponse>
 
     @POST("/v1/ballot/{id}")
-//    suspend fun getBallot(@Body electionId:String): Ballot
-    suspend fun getBallot(@Path("id") electionId:String): NetworkResponse<Ballot, ErrorResponse>
+    suspend fun getBallot(@Path("id") electionId: String): NetworkResponse<Ballot, ErrorResponse>
 
-    @POST("/v1/register/biometric")
-    suspend fun registerBiometricLogin(@Body uniqueID: BiometricToken): NetworkResponse<Object, ErrorResponse>
+    @POST("/v1/submit/{id}")
+    suspend fun submit(
+        @Path("id") electionId: String,
+        @Body vote: BallotVote,
+    ): NetworkResponse<Object, ErrorResponse>
 }
 
 // Lazy init Retrofit services (Reduce computationally expensive process)
