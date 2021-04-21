@@ -74,7 +74,6 @@ class ElectionFragment : Fragment() {
     */
     private fun observeAuthenticationState() {
         loginViewModel.authState.observe(viewLifecycleOwner, Observer { authState ->
-            Toast.makeText(this.requireContext(), authState.toString(), Toast.LENGTH_SHORT).show()
             when (authState) {
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
                     checkBiometricEnabled()
