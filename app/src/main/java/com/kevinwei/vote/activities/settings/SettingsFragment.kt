@@ -9,10 +9,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
 import com.kevinwei.vote.*
 import com.kevinwei.vote.R
+import com.kevinwei.vote.activities.election.ElectionViewModel
 import com.kevinwei.vote.activities.login.LoginResult
 import com.kevinwei.vote.activities.login.LoginViewModel
 import com.kevinwei.vote.model.BiometricToken
@@ -29,11 +32,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var biometricPrompt: BiometricPrompt
 
+    private val settingsViewModel by viewModels<SettingsViewModel>()
+
     private var cryptographyManager = CryptographyManager()
     private val ciphertextWrapper
         get() = cryptographyManager.getCiphertextWrapperFromSharedPrefs(
             requireActivity().applicationContext,
-            SHARED_PREFS_FILENAME,
+            SHARED_PREF_FILENAME,
             Context.MODE_PRIVATE,
             CIPHERTEXT_WRAPPER
         )
@@ -156,25 +161,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun encryptAndStoreBiometricToken(authResult: BiometricPrompt.AuthenticationResult) {
         authResult.cryptoObject?.cipher?.apply {
-            // Generate a UUID and register it on the server
-            val uniqueID: String = UUID.randomUUID().toString()
 
-            // TODO
-            viewLifecycleOwner.lifecycleScope.launch {
-                try {
-                    val biometricToken = BiometricToken(uniqueID)
-                    ElectionsApi.client.registerBiometricLogin(biometricToken)
-                } catch (e: Exception) {
+            val biometricPassword = UUID.randomUUID().toString().replace("-", "")
+            Log.d(TAG, biometricPassword)
+            settingsViewModel.registerBiometric(biometricPassword)
 
-                }
-            }
-
-            // might be better to move to own thread
-            val encryptedBiometricTokenWrapper = cryptographyManager.encryptData(uniqueID, this)
+            val encryptedBiometricTokenWrapper = cryptographyManager.encryptData(biometricPassword, this)
             cryptographyManager.persistCiphertextWrapperToSharedPrefs(
                 encryptedBiometricTokenWrapper,
                 requireContext().applicationContext,
-                SHARED_PREFS_FILENAME,
+                SHARED_PREF_FILENAME,
                 Context.MODE_PRIVATE,
                 CIPHERTEXT_WRAPPER
             )

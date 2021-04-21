@@ -3,6 +3,7 @@ package com.kevinwei.vote
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import android.util.Log
 import androidx.preference.PreferenceManager
 import java.nio.charset.Charset
 import java.security.KeyStore
@@ -21,6 +22,7 @@ Code Sample from: https://developer.android.com/codelabs/biometric-login
  * Handles encryption and decryption
  */
 interface CryptographyManager {
+
 
     fun getInitializedCipherForEncryption(keyName: String): Cipher
 
@@ -60,7 +62,7 @@ fun CryptographyManager(): CryptographyManager = CryptographyManagerImpl()
  * fun CryptographyManager(): CryptographyManager = CryptographyManagerImpl()
  */
 private class CryptographyManagerImpl : CryptographyManager {
-
+    private val TAG = "CryptographyManager"
     private val KEY_SIZE = 256
     private val ANDROID_KEYSTORE = "AndroidKeyStore"
     private val ENCRYPTION_BLOCK_MODE = KeyProperties.BLOCK_MODE_GCM
@@ -134,7 +136,7 @@ private class CryptographyManagerImpl : CryptographyManager {
         prefKey: String
     ) {
         val json = Gson().toJson(ciphertextWrapper)
-        val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val sharedPrefs = context.getSharedPreferences(filename, mode)
         sharedPrefs.edit().putString(prefKey, json).apply()
     }
 
@@ -144,7 +146,7 @@ private class CryptographyManagerImpl : CryptographyManager {
         mode: Int,
         prefKey: String
     ): CiphertextWrapper? {
-        val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val sharedPrefs = context.getSharedPreferences(filename, mode)
         val json = sharedPrefs.getString(prefKey, null)
         return Gson().fromJson(json, CiphertextWrapper::class.java)
     }
