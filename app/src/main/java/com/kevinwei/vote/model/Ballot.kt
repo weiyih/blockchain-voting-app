@@ -9,7 +9,7 @@ data class Ballot(
     val electionId: String,
 
     @Json(name = "district_id")
-    val districtId: String,
+    val districtId: Int,
 
     @Json(name = "district_name")
     val districtName: String,

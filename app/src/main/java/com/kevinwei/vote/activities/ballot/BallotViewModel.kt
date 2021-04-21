@@ -30,7 +30,7 @@ class BallotViewModel : ViewModel() {
     val submitResult: LiveData<SubmitResult> = _submitResult
 
     private var _electionId: String = ""
-    private var _districtId: String = ""
+    private var _districtId: Int = 0
 
 
     // Retrieve ballot
@@ -59,7 +59,6 @@ class BallotViewModel : ViewModel() {
 
                     }
                 }
-                Log.d(TAG, response.toString())
             } catch (e: Exception) {
                 _candidateData.value = listOf<Candidate>()
                 // throw Exception("Unable to retrieve ballot")
@@ -78,7 +77,9 @@ class BallotViewModel : ViewModel() {
                     candidate.candidateId,
                 )
 
-                val response = ElectionsApi.client.submit(ballotVote)
+                val response = ElectionsApi.client.submit(_electionId, ballotVote)
+
+                Log.d(TAG, response.toString())
 
                 when (response) {
                     is NetworkResponse.Success -> {
@@ -108,7 +109,6 @@ class BallotViewModel : ViewModel() {
                             Toast.LENGTH_SHORT).show();
                     }
                 }
-                Log.d(TAG, response.toString())
             } catch (e: Exception) {
                 _candidateData.value = listOf<Candidate>()
                 // throw Exception("Unable to retrieve ballot")
