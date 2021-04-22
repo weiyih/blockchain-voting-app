@@ -50,7 +50,10 @@ class ElectionAdapter(private val clickListener: ElectionVoteListener) :
 
                     binding.voteButton.isEnabled = checkValidTime(item)
                 }
-                else -> binding.voteButton.setText(R.string.view_receipt)
+                else -> {
+                    binding.voteButton.setText(R.string.vote_okay)
+                    binding.voteButton.isEnabled = false
+                }
             }
 
 
