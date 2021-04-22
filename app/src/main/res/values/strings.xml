@@ -36,7 +36,9 @@
     <string name="submit">submit vote</string>
     <string name="content_description_submit_vote">submit vote</string>
     <string name="election">Election</string>
-    <string name="vote_in">vote</string>
+    <string name="vote_now">vote now</string>
+    <string name="voting_dates">Voting Dates:</string>
+    <string name="view_receipt">view receipt</string>
 
     <!-- SettingsFragment -->
     <string name="setting">Settings</string>
