@@ -31,12 +31,6 @@ data class Election(
     @Json(name = "advanced_end_date")
     var advancedEndDate: String? = null,
 
-    @Json(name = "created_at")
-    val createdAt: String,
-
-    @Json(name = "updated_at")
-    val updatedAt: String,
-
     @Json(name = "vote_status")
-    val voteStatus: Int,
+    val voteStatus: Long
 ) : Parcelable

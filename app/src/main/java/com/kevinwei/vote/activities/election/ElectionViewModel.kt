@@ -26,25 +26,28 @@ class ElectionViewModel : ViewModel() {
     private val _data = MutableLiveData<List<Election>>()
     val electionData: LiveData<List<Election>> = _data
 
-    init {
-        getElections()
-    }
-
     fun getElections() {
         viewModelScope.launch {
             try {
-                when (val response = ElectionsApi.client.getElections()) {
+                Log.d(TAG, "Getting Elections")
+                val response = ElectionsApi.client.getElections()
+                Log.d(TAG, response.toString())
+                when (response ) {
                     is Result.Unauthenticated -> {
+                        Log.d(TAG, "Unauthenticated")
                         _apiResult.value = FailedResult(unauthenticated = true)
                         sessionManager.removeAuthToken()
                     }
                     is Result.Success -> {
+                        Log.d(TAG, response.body.toString())
                         when (response.body!!.success) {
                             "error" -> {
+                                Log.d(TAG, "error")
                                 // Unable to retrieve elections
                                 _apiResult.value = FailedResult(response.body.error!!.message.toString())
                             }
                             "success" -> {
+                                Log.d(TAG, "success")
                                 _apiResult.value = SuccessResult(true)
                                 _data.value = response.body.data!!
 
@@ -52,9 +55,11 @@ class ElectionViewModel : ViewModel() {
                         }
                     }
                     is Result.Error -> {
+                        Log.d(TAG, "API Error")
                         _apiResult.value = FailedResult("Something went wrong. Try again later")
                     }
                     is Result.NetworkError -> {
+                        Log.d(TAG, "Network Error")
                         _apiResult.value = FailedResult("Network error. Try again later")
                     }
                 }
@@ -73,7 +78,7 @@ class ElectionViewModel : ViewModel() {
      */
     private val _navigateToBallot = MutableLiveData<Election?>()
 
-    // state variable for navigation
+    // State variable for navigation
     val navigateToBallot
         get() = _navigateToBallot
 

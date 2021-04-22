@@ -1,9 +1,11 @@
 package com.kevinwei.vote
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kevinwei.vote.security.SessionManager
 import com.kevinwei.vote.databinding.ActivityMainBinding
 
@@ -34,4 +36,5 @@ class MainActivity : AppCompatActivity() {
         val navController = this.findNavController(R.id.navHostFragment)
         return navController.navigateUp()
     }
+
 }

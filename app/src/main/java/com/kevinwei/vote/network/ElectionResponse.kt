@@ -13,6 +13,6 @@ data class ElectionResponse(
     val data: List<Election>?,
 
     @Json(name ="error")
-    val error: ErrorResponse?,
+    val error: ErrorResponse?
 )
 
