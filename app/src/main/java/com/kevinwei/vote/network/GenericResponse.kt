@@ -12,7 +12,10 @@ data class GenericResponse(
     val success: String,
 
     @Json(name="data")
-    val data: Message,
+    val data: Message?,
+
+    @Json(name ="error")
+    val error: ErrorResponse?,
 )
 
 data class Message(
