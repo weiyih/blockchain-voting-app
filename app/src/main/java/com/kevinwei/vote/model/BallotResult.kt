@@ -10,5 +10,5 @@ data class BallotResult (
     val message: String,
 
     @Json(name = "timestamp")
-    val timestamp: Int,
+    val timestamp: Long,
 )

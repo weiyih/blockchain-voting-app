@@ -38,7 +38,7 @@ class BallotViewModel : ViewModel() {
     private var _electionId: String = ""
     private var _districtId: Int = 0
     var districtName: String = ""
-    var timestamp: Int = 0
+    var timestamp: Long = 0
 
     // Retrieve ballot
     fun getBallot(electionId: String) {
@@ -138,8 +138,6 @@ class BallotViewModel : ViewModel() {
 
 // sets state variable when candidate clicked
     fun onCandidateSelected(position: Int, candidate: Candidate) {
-
-
         for (i in _candidateData.value!!.indices) {
             if (i == position) {
                 _selectedCandidate.value =

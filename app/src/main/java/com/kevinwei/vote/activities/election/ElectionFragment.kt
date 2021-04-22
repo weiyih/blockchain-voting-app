@@ -127,7 +127,7 @@ class ElectionFragment : Fragment() {
     }
 
     private fun loadElection() {
-        if (!biometricEnabled) electionViewModel.getElections()
+        if (biometricEnabled) electionViewModel.getElections()
     }
 
     /*
