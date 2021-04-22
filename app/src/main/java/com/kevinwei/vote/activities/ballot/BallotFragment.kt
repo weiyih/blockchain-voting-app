@@ -64,6 +64,7 @@ class BallotFragment : Fragment() {
 
     private fun setupBallotList() {
         binding.electionTitle.text = election.electionName
+        binding.electionDescription.text = election.electionDescription
 
         val ballotAdapter = BallotAdapter(ballotViewModel)
         binding.candidateList.adapter = ballotAdapter
@@ -72,6 +73,7 @@ class BallotFragment : Fragment() {
         // NOTE: Observer is uncessary as data should not change. Refactor into load ballot
         ballotViewModel.candidateData.observe(viewLifecycleOwner, Observer { candidateList ->
             ballotAdapter.submitList(candidateList)
+            binding.electionDistrict.text = ballotViewModel.districtName
         })
 
         // Observer on selected canidate to disable or enable the submission button
