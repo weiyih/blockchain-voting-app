@@ -39,10 +39,10 @@ class LoginFragment : Fragment() {
 
 
     // SharedPreference setting for biometric authentication
-    private var biometricEnabled = false
+    private var biometricEnabled: Boolean = false
 
     // UI login for login with password or biometric
-    private var biometricLogin = false
+    private var biometricLogin: Boolean = false
 
     // UI username display
     private var username: String = ""
@@ -238,7 +238,7 @@ class LoginFragment : Fragment() {
     }
 
     /*
-    * Displays a biometricPrompt
+    * Displays a biometricPrompt for login
     */
     private fun showBiometricLoginPrompt(username: String) {
         ciphertextWrapper?.let { textWrapper ->
