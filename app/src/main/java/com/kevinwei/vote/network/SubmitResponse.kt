@@ -1,6 +1,6 @@
 package com.kevinwei.vote.network
 
-import com.kevinwei.vote.model.BallotResult
+import com.kevinwei.vote.model.SubmitResult
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -10,7 +10,7 @@ data class SubmitResponse(
     val success: String,
 
     @Json(name = "data")
-    val data: BallotResult?,
+    val data: SubmitResult?,
 
     @Json(name ="error")
     val error: ErrorResponse?

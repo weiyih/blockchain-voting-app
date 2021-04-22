@@ -38,7 +38,9 @@ class BallotViewModel : ViewModel() {
     private var _electionId: String = ""
     private var _districtId: Int = 0
     var districtName: String = ""
-    var timestamp: Long = 0
+
+    private val _timestamp = MutableLiveData<Long>()
+    var timestamp: LiveData<Long> = _timestamp
 
     // Retrieve ballot
     fun getBallot(electionId: String) {
@@ -60,7 +62,7 @@ class BallotViewModel : ViewModel() {
                             "error" -> {
                                 Log.d(TAG, "Success error")
                                 // Unable to retrieve ballot
-                                _apiSubmitResult.value = FailedResult(response.body.data!!.error)
+                                _apiSubmitResult.value = FailedResult(response.body.error!!.message)
                             }
                             "success" -> {
                                 districtName = response.body.data!!.districtName
@@ -109,8 +111,9 @@ class BallotViewModel : ViewModel() {
                             }
                             "success" -> {
                                 Log.d(TAG, "Submission success")
+                                _timestamp.value = response.body.data!!.timestamp
                                 _apiSubmitResult.value = SuccessResult(true)
-                                timestamp = response.body.data!!.timestamp
+
                             }
                         }
                     }

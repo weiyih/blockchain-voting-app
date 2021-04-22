@@ -5,7 +5,7 @@ import com.squareup.moshi.JsonClass
 
 
 @JsonClass(generateAdapter = true)
-data class BallotResult (
+data class SubmitResult (
     @Json(name = "message")
     val message: String,
 

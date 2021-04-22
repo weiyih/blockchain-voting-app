@@ -57,12 +57,6 @@ class BallotFragment : Fragment() {
         _binding = null
     }
 
-    // Return back to the election page onResume
-    override fun onResume() {
-        super.onResume()
-        navController.popBackStack();
-    }
-
     private fun loadBallot() {
         ballotViewModel.getBallot(election.electionId);
     }
@@ -178,14 +172,15 @@ class BallotFragment : Fragment() {
                 when (result) {
                     is SuccessResult -> {
                         // TODO - Disable progress bar
-                        val ballotTimestamp = ballotViewModel.timestamp;
+
+                        val ballotTimestamp = ballotViewModel.timestamp.value;
                         val districtName = ballotViewModel.districtName;
 
-                        this.navController.navigate(
+                        navController.navigate(
                             BallotFragmentDirections.actionBallotFragmentToReceiptFragment(
                                 election,
                                 districtName,
-                                ballotTimestamp)
+                                ballotTimestamp!!)
                         )
                     }
                     is FailedResult -> {

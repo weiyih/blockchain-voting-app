@@ -121,7 +121,7 @@ class ElectionFragment : Fragment() {
                 setupBallotNavigation()
             }
             false -> {
-                navController.navigate(R.id.settingsFragment)
+                navController.navigate(R.id.action_electionFragment_to_settingsFragment)
             }
         }
     }

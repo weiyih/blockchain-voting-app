@@ -193,9 +193,9 @@ class LoginFragment : Fragment() {
                         // TODO - Disable progress bar
                         val user = loginViewModel.user.value!!
                         when (user.verified) {
-                            true -> navController.navigate(R.id.electionFragment)
+                            true -> navController.navigate(R.id.action_loginFragment_to_electionFragment)
                             // TODO - Implement registration workflow use-case
-                            false -> navController.navigate(R.id.electionFragment)
+                            false -> navController.navigate(R.id.action_loginFragment_to_electionFragment)
                         }
                     }
                     is FailedResult -> {

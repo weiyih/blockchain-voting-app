@@ -10,8 +10,8 @@
         android:name="com.kevinwei.vote.activities.login.LoginFragment"
         android:label="LoginFragment">
         <action
-            android:id="@+id/action_loginFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            android:id="@+id/action_loginFragment_to_electionFragment"
+            app:destination="@id/electionFragment" />
     </fragment>
     <fragment
         android:id="@+id/electionFragment"
@@ -21,6 +21,9 @@
         <action
             android:id="@+id/action_electionFragment_to_ballotFragment"
             app:destination="@id/ballotFragment" />
+        <action
+            android:id="@+id/action_electionFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/ballotFragment"
@@ -33,6 +36,7 @@
         <action
             android:id="@+id/action_ballotFragment_to_receiptFragment"
             app:destination="@id/receiptFragment"
+            app:popUpTo="@id/electionFragment"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
@@ -58,11 +62,6 @@
             android:name="ballotTimestamp"
             app:argType="long"
             android:defaultValue="0L"/>
-        <action
-            android:id="@+id/action_receiptFragment_to_electionFragment"
-            app:destination="@id/electionFragment"
-            app:popUpTo="@id/electionFragment"
-            app:popUpToInclusive="true"/>
     </fragment>
 
 </navigation>

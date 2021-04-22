@@ -89,7 +89,6 @@ class LoginViewModel : ViewModel() {
                 // TODO("Pass in device information")
                 val loginRequest = LoginRequest(username, password)
                 val response = ElectionsApi.client.login(loginRequest)
-                Log.d(TAG, response.toString())
                 when (response) {
                     is Result.Success -> {
                         when (response.body!!.success) {
