@@ -29,9 +29,7 @@
         tools:layout="@layout/fragment_ballot">
         <argument
             android:name="election"
-            android:defaultValue="@null"
-            app:argType="com.kevinwei.vote.model.Election"
-            app:nullable="true" />
+            app:argType="com.kevinwei.vote.model.Election" />
         <action
             android:id="@+id/action_ballotFragment_to_receiptFragment"
             app:destination="@id/receiptFragment"
@@ -52,9 +50,7 @@
         tools:layout="@layout/fragment_receipt">
         <argument
             android:name="election"
-            android:defaultValue="@null"
-            app:argType="com.kevinwei.vote.model.Election"
-            app:nullable="true" />
+            app:argType="com.kevinwei.vote.model.Election" />
         <argument
             android:name="districtName"
             app:argType="string"

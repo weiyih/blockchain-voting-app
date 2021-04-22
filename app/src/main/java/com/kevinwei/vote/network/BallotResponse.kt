@@ -10,6 +10,9 @@ data class BallotResponse(
     val success: String,
 
     @Json(name = "data")
-    val data: Ballot,
+    val data: Ballot?,
+
+    @Json(name ="error")
+    val error: ErrorResponse?
 )
 

@@ -14,14 +14,16 @@
 
     <!--Biometric Prompt -->
     <string name="secret_key" translatable="false">todo_generate_secret_key</string>
-    <string name="prompt_bio_title">Biometric Authentication</string>
-    <string name="prompt_bio_subtitle_vote">Oakville Votes requires your biometrics to submit your ballot</string>
-    <string name="prompt_bio_subtitle_enable">Oakville Votes requires your biometrics to use access elections</string>
-    <string name="prompt_bio_description">Oakville Votes is using Android biometric authentication</string>
+    <string name="prompt_bio_confirm">Vote Biometric Authentication</string>
+    <string name="prompt_bio_login">Login Biometric Authentication</string>
+    <string name="prompt_bio_enable">Enable Biometric Authentication</string>
+    <string name="prompt_bio_subtitle_vote">Oakville Votes requires biometric authentication to submit your ballot</string>
+    <string name="prompt_bio_subtitle_enable">Oakville Votes requires your biometrics to use access the application</string>
     <string name="prompt_bio_subtitle_login">Oakville Votes requires your biometrics to login</string>
     <string name="prompt_bio_use_password">Use password</string>
     <string name="biometric_enabled_message">Biometric sign in has been enabled</string>
-    <string name="cancel">Cancel</string>
+    <string name="prompt_bio_description">Oakville Votes is using Android biometric authentication</string>
+    <string name="cancel">CANCEL</string>
 
     <!-- ElectionFragment -->
     <string name="main_title">Town of Oakville Elections</string>

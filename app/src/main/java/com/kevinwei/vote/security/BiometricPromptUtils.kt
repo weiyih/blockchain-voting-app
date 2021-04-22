@@ -68,7 +68,7 @@ object BiometricPromptUtils {
     */
     fun enableBiometricPrompt(activity: FragmentActivity): BiometricPrompt.PromptInfo =
         BiometricPrompt.PromptInfo.Builder().apply {
-            setTitle(activity.getString(R.string.prompt_bio_title))
+            setTitle(activity.getString(R.string.prompt_bio_enable))
             setSubtitle(activity.getString(R.string.prompt_bio_subtitle_enable))
             setConfirmationRequired(true)
             setNegativeButtonText(activity.getString(R.string.cancel))
@@ -76,7 +76,7 @@ object BiometricPromptUtils {
 
     fun loginBiometricPrompt(activity: FragmentActivity): BiometricPrompt.PromptInfo =
         BiometricPrompt.PromptInfo.Builder().apply {
-            setTitle(activity.getString(R.string.prompt_bio_title))
+            setTitle(activity.getString(R.string.prompt_bio_login))
             setSubtitle(activity.getString(R.string.prompt_bio_subtitle_login))
             setConfirmationRequired(true)
             setNegativeButtonText(activity.getString(R.string.cancel))
@@ -84,7 +84,7 @@ object BiometricPromptUtils {
 
     fun voteBiometricPrompt(activity: FragmentActivity): BiometricPrompt.PromptInfo =
         BiometricPrompt.PromptInfo.Builder().apply {
-            setTitle(activity.getString(R.string.prompt_bio_title))
+            setTitle(activity.getString(R.string.prompt_bio_confirm))
             setSubtitle(activity.getString(R.string.prompt_bio_subtitle_vote))
             setConfirmationRequired(true)
             setNegativeButtonText(activity.getString(R.string.cancel))

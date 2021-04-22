@@ -11,10 +11,6 @@
         <variable
             name="viewModel"
             type="com.kevinwei.vote.activities.ballot.BallotViewModel" />
-
-        <variable
-            name="clickListener"
-            type="com.kevinwei.vote.adapter.BallotVoteListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

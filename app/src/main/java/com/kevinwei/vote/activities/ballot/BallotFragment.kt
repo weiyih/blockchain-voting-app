@@ -11,35 +11,45 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kevinwei.vote.adapter.BallotAdapter
-import com.kevinwei.vote.adapter.BallotVoteListener
 import com.kevinwei.vote.databinding.FragmentBallotBinding
+import com.kevinwei.vote.model.Election
+import com.kevinwei.vote.network.ApiResult
+import com.kevinwei.vote.network.FailedResult
+import com.kevinwei.vote.network.SuccessResult
 import com.kevinwei.vote.security.BiometricPromptUtils
 
 class BallotFragment : Fragment() {
     private var _binding: FragmentBallotBinding? = null
     private val binding get() = _binding!!
-    private lateinit var navController: NavController
     private val ballotViewModel by viewModels<BallotViewModel>()
+    private lateinit var navController: NavController
+    private val args: BallotFragmentArgs by navArgs()
+    private lateinit var election: Election
 
-    val args: BallotFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-//        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_ballot, container, false)
         _binding = FragmentBallotBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        navController = findNavController()
+        election = args.election
+
         setupBallotList()
         setupSubmitBallot()
+        observeBallotResponse()
+        observeSubmitResponse()
+        loadBallot()
     }
 
     override fun onDestroy() {
@@ -47,27 +57,30 @@ class BallotFragment : Fragment() {
         _binding = null
     }
 
+    // Return back to the election page onResume
+    override fun onResume() {
+        super.onResume()
+        navController.popBackStack();
+    }
+
+    private fun loadBallot() {
+        ballotViewModel.getBallot(election.electionId);
+    }
+
+
     private fun setupBallotList() {
-        val election = args.election
-        binding.electionTitle.text = election?.electionName
+        binding.electionTitle.text = election.electionName
 
-        val ballotAdapter = BallotAdapter(
-            ballotViewModel,
-            BallotVoteListener { candidate ->
-//            ballotViewModel.onCandidateClick(candidate)
-                Toast.makeText(requireContext(),
-                    "${candidate.candidateName} ${candidate.selected.toString()}",
-                    Toast.LENGTH_SHORT).show()
-            })
+        val ballotAdapter = BallotAdapter(ballotViewModel)
+        binding.candidateList.adapter = ballotAdapter
 
-        // Retrieve and load the ballot data
-        ballotViewModel.getBallot(election!!.electionId);
+        // Observer to update the recycler view on data load
+        // NOTE: Observer is uncessary as data should not change. Refactor into load ballot
         ballotViewModel.candidateData.observe(viewLifecycleOwner, Observer { candidateList ->
-//            Toast.makeText(requireContext(), "List Updated", Toast.LENGTH_SHORT).show()
             ballotAdapter.submitList(candidateList)
         })
 
-        // Disable or enable the submission button
+        // Observer on selected canidate to disable or enable the submission button
         ballotViewModel.selectedCandidate.observe(viewLifecycleOwner, Observer { selected ->
             when (selected) {
                 null -> binding.submitVote.isEnabled = false
@@ -77,33 +90,62 @@ class BallotFragment : Fragment() {
                 }
             }
         })
-        binding.candidateList.adapter = ballotAdapter
     }
 
-    private fun setupSubmitBallot() {
-//        TODO("Observe if candidate has been selected")
-//        ballotViewModel.selected
+    /*
+    * observeBallotResponse  observe retrieving the ballot information result from the API
+    */
+    private fun observeBallotResponse() {
+        ballotViewModel.apiLoadResult.observe(
+            viewLifecycleOwner,
+            Observer { apiResult: ApiResult ->
+                val result = apiResult ?: return@Observer
+                when (result) {
+                    is SuccessResult -> {
+                        // Do Nothing. Data is handled by the observer on the LiveData
+                    }
+                    is FailedResult -> {
+                        result.unauthenticated?.let {
+                            MaterialAlertDialogBuilder(requireContext())
+                                .setTitle("Session Timed Out")
+                                .setMessage("Your voting session has timed out. Application will now close. You can login again to vote")
+                                .setPositiveButton("EXIT") { dialog, which ->
+                                    requireActivity().finishAffinity()
+                                }
+                                .show()
+                        }
+                        // TODO - Disable progress bar
+                        result.error?.let {
+                            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            })
+    }
 
+
+    /*
+    * setupSubmitBallot registers a clickListner on the submit vote button
+     */
+    private fun setupSubmitBallot() {
         binding.submitVote.setOnClickListener { _ ->
-            displayBiometricPrompt()
+            showConfirmBiometricPrompt()
             BiometricPromptUtils.voteBiometricPrompt(this.activity as AppCompatActivity)
         }
-
     }
 
-    private fun displayBiometricPrompt() {
-
+    /*
+    * Displays a biometricPrompt for confirming ballot submission
+    */
+    private fun showConfirmBiometricPrompt() {
         // BiometricPrompt callback
         val callback = object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                 super.onAuthenticationError(errorCode, errString)
-                Toast.makeText(context,
-                    "User Cancelled: $errorCode", Toast.LENGTH_SHORT).show()
             }
 
             override fun onAuthenticationFailed() {
                 super.onAuthenticationFailed()
-                Toast.makeText(context, "Authentication Failed", Toast.LENGTH_SHORT).show()
             }
 
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
@@ -113,15 +155,55 @@ class BallotFragment : Fragment() {
             }
         }
 
-        val biometricPrompt = BiometricPromptUtils.createBiometricPrompt(requireActivity(), callback)
+        val biometricPrompt =
+            BiometricPromptUtils.createBiometricPrompt(requireActivity(), callback)
 
-        val promptInfo = BiometricPromptUtils.enableBiometricPrompt(requireActivity())
+        val promptInfo = BiometricPromptUtils.voteBiometricPrompt(requireActivity())
         biometricPrompt.authenticate(promptInfo)
     }
 
     private fun submitBallot(authResult: BiometricPrompt.AuthenticationResult) {
         ballotViewModel.submitBallot()
+    }
 
+    /*
+    * observeSubmitResponse registers observer on the API responses to submitting a ballot
+    */
+    private fun observeSubmitResponse() {
+        // Observe the ballot submit result from the API
+        ballotViewModel.apiSubmitResult.observe(
+            viewLifecycleOwner,
+            Observer { apiResult: ApiResult ->
+                val result = apiResult ?: return@Observer
+                when (result) {
+                    is SuccessResult -> {
+                        // TODO - Disable progress bar
+                        val ballotTimestamp = ballotViewModel.timestamp;
+                        val districtName = ballotViewModel.districtName;
 
+                        this.navController.navigate(
+                            BallotFragmentDirections.actionBallotFragmentToReceiptFragment(
+                                election,
+                                districtName,
+                                ballotTimestamp)
+                        )
+                    }
+                    is FailedResult -> {
+                        result.unauthenticated?.let {
+                            MaterialAlertDialogBuilder(requireContext())
+                                .setTitle("Session Timed Out")
+                                .setMessage("Your voting session has timed out. Application will now close. You can login again to vote")
+                                .setPositiveButton("EXIT") { dialog, which ->
+                                    requireActivity().finishAffinity()
+                                }
+                                .show()
+                        }
+                        // TODO - Disable progress bar
+                        result.error?.let {
+                            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            })
     }
 }

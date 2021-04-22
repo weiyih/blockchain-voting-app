@@ -16,6 +16,7 @@ import com.kevinwei.vote.security.SessionManager
 import kotlinx.coroutines.launch
 
 class BallotViewModel : ViewModel() {
+
     private val TAG = "BallotViewModel"
     private val sessionManager: SessionManager = SessionManager(MainApplication.appContext)
 
@@ -36,7 +37,8 @@ class BallotViewModel : ViewModel() {
     val selectedCandidate: LiveData<Candidate?> = _selectedCandidate
     private var _electionId: String = ""
     private var _districtId: Int = 0
-
+    var districtName: String = ""
+    var timestamp: Int = 0
 
     // Retrieve ballot
     fun getBallot(electionId: String) {
@@ -44,7 +46,11 @@ class BallotViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                when (val response = ElectionsApi.client.getBallot(electionId)) {
+                Log.d(TAG, "Loading ballot")
+
+                val response = ElectionsApi.client.getBallot(electionId)
+                Log.d(TAG, response.toString())
+                when (response) {
                     is Result.Unauthenticated -> {
                         _apiLoadResult.value = FailedResult(unauthenticated = true)
                         sessionManager.removeAuthToken()
@@ -52,11 +58,13 @@ class BallotViewModel : ViewModel() {
                     is Result.Success -> {
                         when (response.body!!.success) {
                             "error" -> {
+                                Log.d(TAG, "Success error")
                                 // Unable to retrieve ballot
-                                _apiSubmitResult.value = FailedResult(response.body!!.data.error)
+                                _apiSubmitResult.value = FailedResult(response.body.data!!.error)
                             }
                             "success" -> {
-                                _candidateData.value = response.body!!.data.candidateList
+                                districtName = response.body.data!!.districtName
+                                _candidateData.value = response.body.data!!.candidateList
                                 _apiLoadResult.value = SuccessResult(true)
                             }
                         }
@@ -79,15 +87,14 @@ class BallotViewModel : ViewModel() {
 
     fun submitBallot() {
         viewModelScope.launch {
+            Log.d(TAG, "Submitting ballot")
             try {
                 val candidate = selectedCandidate.value!!
+                val ballotVote = BallotRequest( _electionId, _districtId, candidate.candidateId )
 
-                val ballotVote = BallotRequest(
-                    _electionId,
-                    _districtId,
-                    candidate.candidateId,
-                )
-                when (val response = ElectionsApi.client.submit(_electionId, ballotVote)) {
+                val response = ElectionsApi.client.submit(_electionId, ballotVote)
+                Log.d(TAG, response.toString())
+                when (response) {
                     is Result.Unauthenticated -> {
                         _apiSubmitResult.value = FailedResult(unauthenticated = true)
                         sessionManager.removeAuthToken()
@@ -95,20 +102,26 @@ class BallotViewModel : ViewModel() {
                     is Result.Success -> {
                         when (response.body!!.success) {
                             "error" -> {
-                                // Unable to retrieve ballot
-                                _apiSubmitResult.value = FailedResult(response.body!!.data.message)
+                                Log.d(TAG, "Submission error")
+                                // DEFAULT TO error message
+//                                _apiSubmitResult.value = FailedResult(response.body!!.data.message)
+                                _apiSubmitResult.value = FailedResult("Unable to submit ballot")
                             }
                             "success" -> {
+                                Log.d(TAG, "Submission success")
                                 _apiSubmitResult.value = SuccessResult(true)
+                                timestamp = response.body.data!!.timestamp
                             }
                         }
                     }
                     is Result.Error -> {
-                        //Something went wrong
+                        Log.d(TAG, "API Error")
                         _apiSubmitResult.value = FailedResult("Unable to submit ballot")
                     }
                     is Result.NetworkError -> {
-                        _apiSubmitResult.value = FailedResult("Network error: Unable to submit ballot. ")
+                        Log.d(TAG, "Network Error")
+                        _apiSubmitResult.value =
+                            FailedResult("Network error: Unable to submit ballot. ")
                     }
                 }
             } catch (e: Exception) {
