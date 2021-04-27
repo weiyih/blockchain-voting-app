@@ -101,7 +101,7 @@ class LoginFragment : Fragment() {
     private fun getRememberedUsername() {
         // TODO - replace with default email with empty string ""
         val usernameKey = getString(R.string.pref_usertoken)
-        username = sharedPrefs.getString(usernameKey, "weiyih@sheridancollege.ca").toString()
+        username = sharedPrefs.getString(usernameKey, "").toString()
         binding.username.editText!!.setText(username)
     }
 

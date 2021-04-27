@@ -58,9 +58,6 @@ class ElectionFragment : Fragment() {
         navController = findNavController()
 
         checkAuthenticationState()
-        checkBiometricEnabled()
-        // setupElectionList() and setupBallotNavigation() called in checkBiometricEnabled
-        loadElection()
     }
 
     override fun onCreateView(
@@ -77,13 +74,6 @@ class ElectionFragment : Fragment() {
         super.onDestroy()
         _binding = null
     }
-
-    override fun onResume() {
-        super.onResume()
-        checkBiometricEnabled()
-        loadElection()
-    }
-
 
     /*
     * observerAuthenticationState determines if user has successfully authenticated (ie. logged in)
@@ -105,6 +95,10 @@ class ElectionFragment : Fragment() {
         val authState = loginViewModel.authState.value
         if (authState == LoginViewModel.AuthenticationState.UNAUTHENTICATED) {
             navController.navigate(R.id.loginFragment)
+        }  else {
+            checkBiometricEnabled()
+            // setupElectionList() and setupBallotNavigation() called in checkBiometricEnabled
+            loadElection()
         }
 
     }
@@ -121,7 +115,7 @@ class ElectionFragment : Fragment() {
                 setupBallotNavigation()
             }
             false -> {
-                navController.navigate(R.id.action_electionFragment_to_settingsFragment)
+                navController.navigate(R.id.settingsFragment)
             }
         }
     }
