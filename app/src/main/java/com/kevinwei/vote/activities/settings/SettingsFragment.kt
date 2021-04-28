@@ -102,6 +102,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 AUTHORIZED_BIOMETRICS
             )
         }
+        updateFailedBiometricPrefs()
+        // TODO - Replace with registerActivityForResult
         activity?.startActivity(enrollIntent)
     }
 

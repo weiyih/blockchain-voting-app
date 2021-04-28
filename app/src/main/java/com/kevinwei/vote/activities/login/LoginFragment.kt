@@ -99,7 +99,6 @@ class LoginFragment : Fragment() {
     * username TextView
     */
     private fun getRememberedUsername() {
-        // TODO - replace with default email with empty string ""
         val usernameKey = getString(R.string.pref_usertoken)
         username = sharedPrefs.getString(usernameKey, "").toString()
         binding.username.editText!!.setText(username)
@@ -111,9 +110,12 @@ class LoginFragment : Fragment() {
     * Updates the text of the login button
     */
     private fun checkBiometricEnabled() {
+        // Update login button text
         if (biometricEnabled) {
             biometricLogin = true
             binding.btnLogin.setText(R.string.btn_login_biometric)
+            // Disable biometric button if username is empty
+            binding.btnLogin.isEnabled = binding.username.editText!!.text.isNotEmpty()
         } else {
             biometricLogin = false
             binding.btnLogin.setText(R.string.btn_login)
@@ -133,14 +135,13 @@ class LoginFragment : Fragment() {
                     is SuccessLoginFormState -> {
                         binding.username.error = null
                         binding.password.error = null
-                        binding.btnLogin.isEnabled = true
                     }
                     is FailedLoginFormState -> {
                         loginState.usernameError?.let { binding.username.error = getString(it) }
                         loginState.passwordError?.let { binding.password.error = getString(it) }
-                        binding.btnLogin.isEnabled = false
                     }
                 }
+                checkBiometricEnabled()
             })
 
         // Triggers viewModel to validate username and password on changes to the username
@@ -230,6 +231,7 @@ class LoginFragment : Fragment() {
     * setupRegisterButton registers behaviour to navigate to the registrationFragment
     */
     private fun setupRegisterButton() {
+        binding.btnRegister.isEnabled = false
         // Navigate to register fragment
         binding.btnRegister.setOnClickListener {
             // TODO - Navigate to registration
