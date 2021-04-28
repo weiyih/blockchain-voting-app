@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.widget.doAfterTextChanged
@@ -74,8 +75,7 @@ class LoginFragment : Fragment() {
         navController = findNavController()
 
         // TODO - Prevent back navigation to electionFragment
-        // savedStateHandle = findNavController().previousBackStackEntry!!.savedStateHandle
-        // savedStateHandle.set(LOGIN_SUCCESSFUL, false)
+        overrideOnBackPressed()
 
         getRememberedUsername()
         checkBiometricEnabled()
@@ -90,6 +90,15 @@ class LoginFragment : Fragment() {
         (requireActivity() as MainActivity).supportActionBar!!.show()
         _binding = null
     }
+
+    /*
+    * Prevents the loginFragment from attempt back navigation to the ElectionFragment
+    */
+    private fun overrideOnBackPressed() {
+        val callback = requireActivity().onBackPressedDispatcher.addCallback(this) { }
+        callback.isEnabled
+    }
+
 
     /*
     * getRemeberedUsername retrieves the stored username from SharedPreferences and populates the
