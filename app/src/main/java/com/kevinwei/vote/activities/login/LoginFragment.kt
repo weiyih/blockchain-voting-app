@@ -44,9 +44,6 @@ class LoginFragment : Fragment() {
     // UI login for login with password or biometric
     private var biometricLogin: Boolean = false
 
-    // UI username display
-    private var username: String = ""
-
     // CryptographyManager for the crypto object used in BiometricPrompt authentication
     private val cryptographyManager = CryptographyManager()
     private val ciphertextWrapper
@@ -100,22 +97,20 @@ class LoginFragment : Fragment() {
     */
     private fun getRememberedUsername() {
         val usernameKey = getString(R.string.pref_usertoken)
-        username = sharedPrefs.getString(usernameKey, "").toString()
+        val username = sharedPrefs.getString(usernameKey, "").toString()
         binding.username.editText!!.setText(username)
     }
 
     /*
     * checkBiometricEnabled
     * Retrieves the biometricEnabled settings from SharedPreferences
-    * Updates the text of the login button
+    * Updates the text of the login button and disables the UI login
     */
     private fun checkBiometricEnabled() {
         // Update login button text
         if (biometricEnabled) {
             biometricLogin = true
             binding.btnLogin.setText(R.string.btn_login_biometric)
-            // Disable biometric button if username is empty
-            binding.btnLogin.isEnabled = binding.username.editText!!.text.isNotEmpty()
         } else {
             biometricLogin = false
             binding.btnLogin.setText(R.string.btn_login)
@@ -135,13 +130,18 @@ class LoginFragment : Fragment() {
                     is SuccessLoginFormState -> {
                         binding.username.error = null
                         binding.password.error = null
+                        binding.btnLogin.isEnabled = true
                     }
                     is FailedLoginFormState -> {
+                        binding.btnLogin.isEnabled = false
                         loginState.usernameError?.let { binding.username.error = getString(it) }
-                        loginState.passwordError?.let { binding.password.error = getString(it) }
+                        loginState.passwordError?.let { it ->
+                            // Note: if it's password error that means username has NO errors
+                            binding.username.error = null
+                            binding.password.error = getString(it)
+                        }
                     }
                 }
-                checkBiometricEnabled()
             })
 
         // Triggers viewModel to validate username and password on changes to the username
@@ -161,7 +161,6 @@ class LoginFragment : Fragment() {
                 binding.password.editText!!.text.toString()
             )
 
-            // TODO ("Might be possible to refactor into the LoginFormState?")
             // UI Logic to determine the login behaviour of the login button
             when (binding.password.editText!!.text.length) {
                 // Empty password field
@@ -174,8 +173,6 @@ class LoginFragment : Fragment() {
                     binding.btnLogin.setText(R.string.btn_login)
                     binding.btnLogin.isEnabled = false
                 }
-                // Enables login button with password
-                in 8..50 -> binding.btnLogin.isEnabled = true
             }
         }
     }

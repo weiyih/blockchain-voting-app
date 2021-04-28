@@ -39,6 +39,7 @@ class LoginViewModel : ViewModel() {
 
     init {
         _authState.value = AuthenticationState.UNAUTHENTICATED
+        _loginForm.value = FailedLoginFormState()
         sessionManager = SessionManager(MainApplication.appContext)
     }
 
