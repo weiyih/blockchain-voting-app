@@ -47,15 +47,25 @@ class LoginViewModel : ViewModel() {
     * Validates user input for username and password
     * Displays error messages
     */
+
+    fun onUsernameDataChange(username: String): Int? {
+        if (!isUsernameValid(username)) return R.string.invalid_username
+        return null
+    }
+
+    fun onPasswordDataChange(password: String): Int? {
+        if (!isPasswordValid(password)) return R.string.invalid_password
+        return null
+    }
+
     fun onLoginDataChange(username: String, password: String) {
-        // Checks if username is a valid email
-        if (!isUsernameValid(username)) {
-            _loginForm.value = FailedLoginFormState(usernameError = R.string.invalid_username)
-            // Checks if password is empty or greater than 7 characters
-        } else if (!isPasswordValid(password)) {
-            _loginForm.value = FailedLoginFormState(passwordError = R.string.invalid_password)
-        } else {
+        val userError: Int? = onUsernameDataChange(username)
+        val passError: Int? = onPasswordDataChange(password)
+
+        if (userError == null && passError == null) {
             _loginForm.value = SuccessLoginFormState(isDataValid = true)
+        } else {
+            _loginForm.value = FailedLoginFormState(usernameError = userError, passwordError = passError)
         }
     }
 

@@ -134,12 +134,10 @@ class LoginFragment : Fragment() {
                     }
                     is FailedLoginFormState -> {
                         binding.btnLogin.isEnabled = false
+                        binding.username.error = null
+                        binding.password.error = null
                         loginState.usernameError?.let { binding.username.error = getString(it) }
-                        loginState.passwordError?.let { it ->
-                            // Note: if it's password error that means username has NO errors
-                            binding.username.error = null
-                            binding.password.error = getString(it)
-                        }
+                        loginState.passwordError?.let { binding.password.error = getString(it) }
                     }
                 }
             })
