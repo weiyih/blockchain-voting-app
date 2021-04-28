@@ -1,16 +1,19 @@
 package com.kevinwei.vote.activities.election
 
+import android.content.DialogInterface
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
@@ -57,6 +60,7 @@ class ElectionFragment : Fragment() {
 
         navController = findNavController()
 
+        overrideOnBackPressed()
         checkAuthenticationState()
     }
 
@@ -74,6 +78,25 @@ class ElectionFragment : Fragment() {
         super.onDestroy()
         _binding = null
     }
+
+
+    /*
+    * Prevents the loginFragment from attempt back navigation to the ElectionFragment
+    */
+    private fun overrideOnBackPressed() {
+        val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Logout Application")
+                .setMessage("Do you want to logout of the application?")
+                .setNeutralButton("Cancel") { _, _ -> }
+                .setPositiveButton("Logout") { _, _ ->
+                    requireActivity().finishAffinity()
+                }
+                .show()
+        }
+        callback.isEnabled
+    }
+
 
     /*
     * observerAuthenticationState determines if user has successfully authenticated (ie. logged in)
@@ -95,7 +118,8 @@ class ElectionFragment : Fragment() {
         val authState = loginViewModel.authState.value
         if (authState == LoginViewModel.AuthenticationState.UNAUTHENTICATED) {
             navController.navigate(R.id.loginFragment)
-        }  else {
+        } else {
+
             checkBiometricEnabled()
             // setupElectionList() and setupBallotNavigation() called in checkBiometricEnabled
             loadElection()
