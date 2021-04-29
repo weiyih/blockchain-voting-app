@@ -155,7 +155,7 @@ class BallotViewModel : ViewModel() {
     private val _navigateToBallotConfirm = MutableLiveData<Candidate?>()
 
     // state variable for navigation
-    val navigateToBallot
+    val navigateToReceipt
         get() = _navigateToBallotConfirm
 
 

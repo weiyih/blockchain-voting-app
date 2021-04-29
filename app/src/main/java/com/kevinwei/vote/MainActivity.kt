@@ -22,9 +22,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val navController = this.findNavController(R.id.navHostFragment)
-        val appBarConfiguration = AppBarConfiguration(navController.graph)
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
+//        val navController = this.findNavController(R.id.navHostFragment)
+//        val appBarConfiguration = AppBarConfiguration(navController.graph)
+//        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
 
     }
 
@@ -34,27 +34,27 @@ class MainActivity : AppCompatActivity() {
         sessionManager.removeAuthToken()
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = this.findNavController(R.id.navHostFragment)
-
-        // Dirty hack to display message on SettingsFragment for the AppBar Navigate Up
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        var confirm = sharedPreferences.getBoolean(getString(R.string.pref_biometric), false)
-        if (!confirm) {
-            MaterialAlertDialogBuilder(this)
-                .setTitle("Biometric Authentication")
-                .setMessage("Biometric Authentication must be enabled for the application to work. Please enable biometrics in the settings.")
-                .setPositiveButton("OK") { _, _ ->
-                }
-                .show()
-        }
-
-        return if (!confirm) {
-            false
-        } else {
-            navController.navigateUp()
-        }
-
-    }
+//    override fun onSupportNavigateUp(): Boolean {
+//        val navController = this.findNavController(R.id.navHostFragment)
+//
+//        // Dirty hack to display message on SettingsFragment for the AppBar Navigate Up
+//        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+//        var confirm = sharedPreferences.getBoolean(getString(R.string.pref_biometric), false)
+//        if (!confirm) {
+//            MaterialAlertDialogBuilder(this)
+//                .setTitle("Biometric Authentication")
+//                .setMessage("Biometric Authentication must be enabled for the application to work. Please enable biometrics in the settings.")
+//                .setPositiveButton("OK") { _, _ ->
+//                }
+//                .show()
+//        }
+//
+//        return if (!confirm) {
+//            false
+//        } else {
+//            navController.navigateUp()
+//        }
+//
+//    }
 
 }

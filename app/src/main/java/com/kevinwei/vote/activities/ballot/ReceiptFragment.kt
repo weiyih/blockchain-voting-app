@@ -4,18 +4,17 @@ import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.activity.addCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
+import androidx.navigation.NavOptions
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.ui.NavigationUI
-import com.kevinwei.vote.MainActivity
 import com.kevinwei.vote.R
 import com.kevinwei.vote.databinding.FragmentReceiptBinding
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class ReceiptFragment : Fragment() {
     private val TAG = "ReceiptFragment"
@@ -29,14 +28,10 @@ class ReceiptFragment : Fragment() {
     */
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
-            this.isEnabled = true
+        val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
             navigateToElectionFragment()
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        callback.isEnabled
     }
 
     override fun onCreateView(
@@ -61,7 +56,10 @@ class ReceiptFragment : Fragment() {
     * Remove the ballot from the navigation stack
     */
     private fun navigateToElectionFragment() {
-        navController.popBackStack(R.id.electionFragment, true)
+
+        val navOptions = NavOptions.Builder().setPopUpTo(R.id.electionFragment, true).build()
+        navController.navigate(R.id.electionFragment, null, navOptions)
+//        navController.navigate(R.id.action_receiptFragment_to_electionFragment)
     }
 
     private fun setupReceiptText() {

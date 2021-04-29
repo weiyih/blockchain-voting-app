@@ -14,6 +14,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.kevinwei.vote.activities.election.ElectionFragmentDirections
 import com.kevinwei.vote.adapter.BallotAdapter
 import com.kevinwei.vote.databinding.FragmentBallotBinding
 import com.kevinwei.vote.model.Election
@@ -47,6 +48,7 @@ class BallotFragment : Fragment() {
 
         setupBallotList()
         setupSubmitBallot()
+        setupReceiptNavigation()
         observeBallotResponse()
         observeSubmitResponse()
         loadBallot()
@@ -202,5 +204,17 @@ class BallotFragment : Fragment() {
                     }
                 }
             })
+    }
+
+    private fun setupReceiptNavigation() {
+        ballotViewModel.navigateToReceipt.observe(viewLifecycleOwner, Observer { candidate ->
+            candidate?.let {
+                this.findNavController().navigate(
+                    ElectionFragmentDirections.actionElectionFragmentToBallotFragment(election)
+                )
+                // Reset state to make sure we only navigate once, even if the device has a configuration change.
+                ballotViewModel.onBallotFragmentNavigated()
+            }
+        })
     }
 }
