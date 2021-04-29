@@ -139,7 +139,12 @@ class LoginFragment : Fragment() {
                     is SuccessLoginFormState -> {
                         binding.username.error = null
                         binding.password.error = null
-                        binding.btnLogin.isEnabled = true
+
+                        when (!biometricEnabled && binding.password.editText!!.text.isEmpty()) {
+                            true -> binding.btnLogin.isEnabled = false
+                            false -> binding.btnLogin.isEnabled = true
+                        }
+
                     }
                     is FailedLoginFormState -> {
                         binding.btnLogin.isEnabled = false

@@ -81,7 +81,7 @@ class ReceiptFragment : Fragment() {
 
     private fun setupReturnButton() {
         binding.btnReturn.setOnClickListener {
-            navController.navigate(R.id.electionFragment)
+            navigateToElectionFragment()
         }
     }
 
