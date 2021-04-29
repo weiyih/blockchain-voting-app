@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
@@ -25,6 +26,7 @@ import java.util.*
 class SettingsFragment : PreferenceFragmentCompat() {
     private val TAG = "SettingsFragment"
     private lateinit var sharedPreferences: SharedPreferences
+    private  lateinit var callback: OnBackPressedCallback
 
     private val settingsViewModel by viewModels<SettingsViewModel>()
 
@@ -66,7 +68,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 
     private fun overrideOnBackPressed() {
-        val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+        callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
             displayBiometricWarning()
         }
         callback.isEnabled
@@ -147,6 +149,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     super.onAuthenticationSucceeded(result)
+                    callback.isEnabled = false
                     encryptAndStoreBiometricToken(result)
                 }
             }
@@ -188,6 +191,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         val pref: SwitchPreferenceCompat = findPreference(getString(R.string.pref_biometric))!!
         pref.isChecked = false
+        callback.isEnabled
     }
 
     private fun displayBiometricWarning() {
