@@ -39,15 +39,22 @@ class MainActivity : AppCompatActivity() {
 
         // Dirty hack to display message on SettingsFragment for the AppBar Navigate Up
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        if (!sharedPreferences.getBoolean(getString(R.string.pref_biometric), false)) {
+        var confirm = sharedPreferences.getBoolean(getString(R.string.pref_biometric), false)
+        if (!confirm) {
             MaterialAlertDialogBuilder(this)
                 .setTitle("Biometric Authentication")
                 .setMessage("Biometric Authentication must be enabled for the application to work. Please enable biometrics in the settings.")
-                .setNeutralButton("Understood") { _, _ -> }
+                .setPositiveButton("OK") { _, _ ->
+                }
                 .show()
         }
 
-        return navController.navigateUp()
+        return if (!confirm) {
+            false
+        } else {
+            navController.navigateUp()
+        }
+
     }
 
 }

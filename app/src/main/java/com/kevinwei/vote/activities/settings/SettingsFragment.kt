@@ -25,7 +25,6 @@ import java.util.*
 class SettingsFragment : PreferenceFragmentCompat() {
     private val TAG = "SettingsFragment"
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var biometricPrompt: BiometricPrompt
 
     private val settingsViewModel by viewModels<SettingsViewModel>()
 
@@ -39,12 +38,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         )
 
 
-
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         // Load the preferences from an XML resource
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.context)
         overrideOnBackPressed()
+        displayBiometricWarning()
     }
 
     override fun onPreferenceTreeClick(preference: Preference?): Boolean {
@@ -53,8 +52,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 val value = sharedPreferences.getBoolean(getString(R.string.pref_biometric), false)
                 when (value) {
                     true -> showBiometricPrompt()
-                    false ->
-                        displayBiometricWarning()
+                    false -> displayBiometricWarning()
                 }
             }
             getString(R.string.pref_notification) -> {
@@ -69,9 +67,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun overrideOnBackPressed() {
         val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (!sharedPreferences.getBoolean(getString(R.string.pref_biometric), false)) {
-                displayBiometricWarning()
-            }
+            displayBiometricWarning()
         }
         callback.isEnabled
     }
@@ -173,7 +169,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             Log.d(TAG, biometricPassword)
             settingsViewModel.registerBiometric(biometricPassword)
 
-            val encryptedBiometricTokenWrapper = cryptographyManager.encryptData(biometricPassword, this)
+            val encryptedBiometricTokenWrapper =
+                cryptographyManager.encryptData(biometricPassword, this)
             cryptographyManager.persistCiphertextWrapperToSharedPrefs(
                 encryptedBiometricTokenWrapper,
                 requireContext().applicationContext,
@@ -194,13 +191,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun displayBiometricWarning() {
-
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Biometric Authentication")
-            .setMessage("Biometric Authentication must be enabled for the application to work. Please enable biometrics in the settings.")
-            .setNeutralButton("Understood") { _, _ -> }
-            .show()
-
+        if (!sharedPreferences.getBoolean(getString(R.string.pref_biometric), false)) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Biometric Authentication")
+                .setMessage("Biometric Authentication must be enabled for the application to work. Please enable biometrics in the settings.")
+                .setNeutralButton("OK") { _, _ -> }
+                .show()
+        }
     }
 
 }
