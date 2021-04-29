@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kevinwei.vote.security.SessionManager
 import com.kevinwei.vote.databinding.ActivityMainBinding
@@ -35,6 +36,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = this.findNavController(R.id.navHostFragment)
+
+        // Dirty hack to display message on SettingsFragment for the AppBar Navigate Up
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        if (!sharedPreferences.getBoolean(getString(R.string.pref_biometric), false)) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Biometric Authentication")
+                .setMessage("Biometric Authentication must be enabled for the application to work. Please enable biometrics in the settings.")
+                .setNeutralButton("Understood") { _, _ -> }
+                .show()
+        }
+
         return navController.navigateUp()
     }
 

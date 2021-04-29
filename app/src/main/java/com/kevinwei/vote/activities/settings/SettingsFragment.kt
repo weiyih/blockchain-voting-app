@@ -7,10 +7,15 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.addCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.preference.*
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kevinwei.vote.*
 import com.kevinwei.vote.R
 import com.kevinwei.vote.security.BiometricPromptUtils
@@ -33,10 +38,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
             CIPHERTEXT_WRAPPER
         )
 
+
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         // Load the preferences from an XML resource
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.context)
+        overrideOnBackPressed()
     }
 
     override fun onPreferenceTreeClick(preference: Preference?): Boolean {
@@ -46,11 +54,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 when (value) {
                     true -> showBiometricPrompt()
                     false ->
-                        // TODO ("Show biometric requirement warning")
-                        // TODO ("Unregister biometric login")
-                        Toast.makeText(requireContext(),
-                            "SHOW BIOMETRIC WARNING",
-                            Toast.LENGTH_SHORT).show()
+                        displayBiometricWarning()
                 }
             }
             getString(R.string.pref_notification) -> {
@@ -61,6 +65,17 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         return super.onPreferenceTreeClick(preference)
     }
+
+
+    private fun overrideOnBackPressed() {
+        val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+            if (!sharedPreferences.getBoolean(getString(R.string.pref_biometric), false)) {
+                displayBiometricWarning()
+            }
+        }
+        callback.isEnabled
+    }
+
 
     private fun showBiometricPrompt() {
         val biometricManager = BiometricManager.from(this.requireContext())
@@ -123,7 +138,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                     super.onAuthenticationError(errorCode, errString)
                     Toast.makeText(context,
-                        "Unable to enable biometrics: $errString", Toast.LENGTH_SHORT).show()
+                        "User cancelled biometric authentication", Toast.LENGTH_SHORT).show()
                     updateFailedBiometricPrefs();
                 }
 
@@ -176,6 +191,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         val pref: SwitchPreferenceCompat = findPreference(getString(R.string.pref_biometric))!!
         pref.isChecked = false
+    }
+
+    private fun displayBiometricWarning() {
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Biometric Authentication")
+            .setMessage("Biometric Authentication must be enabled for the application to work. Please enable biometrics in the settings.")
+            .setNeutralButton("Understood") { _, _ -> }
+            .show()
+
     }
 
 }
