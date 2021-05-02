@@ -65,6 +65,7 @@ class BallotViewModel : ViewModel() {
                                 _apiSubmitResult.value = FailedResult(response.body.error!!.message)
                             }
                             "success" -> {
+                                _districtId = response.body.data!!.districtId
                                 districtName = response.body.data!!.districtName
                                 _candidateData.value = response.body.data!!.candidateList
                                 _apiLoadResult.value = SuccessResult(true)
